@@ -1,13 +1,21 @@
 {
-  "name": "pontem/aptos-wallet-adapter",
+  "name": "@pontem/aptos-wallet-adapter",
   "version": "0.4.4",
   "main": "dist/index.js",
   "private": true,
-  "typings": "dist/index.d.ts",
+  "types": "./dist/index.d.ts",
   "files": [
     "src",
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pontem-network/wallet-adapter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pontem-network/wallet-adapter/issues"
+  },
+  "homepage": "https://github.com/pontem-network/wallet-adapter#readme",
   "scripts": {
     "build": "rm -rf dist; tsc -p tsconfig.json"
   },
