@@ -32,7 +32,6 @@ exports.useWalletProviderStore = (0, pinia_1.defineStore)('walletProviderStore',
     const localStorageKey = (0, vue_1.ref)('walletName');
     const autoConnect = (0, vue_1.ref)(false);
     const onError = (0, vue_1.ref)(undefined);
-    // init method which developer should call from Vue component to init store with wallets and parameters
     function init({ wallets = [], onError: onHandleError, localStorageKey: lsKey, autoConnect: autoConnection }) {
         adapters.value = wallets;
         if (lsKey)
@@ -52,14 +51,14 @@ exports.useWalletProviderStore = (0, pinia_1.defineStore)('walletProviderStore',
     const isUnloading = (0, vue_1.ref)(false);
     const readyState = (0, vue_1.computed)(() => { var _a; return ((_a = adapter.value) === null || _a === void 0 ? void 0 : _a.readyState) || WalletAdapters_1.WalletReadyState.Unsupported; });
     const walletNetwork = (0, vue_1.ref)(null);
-    // Wrap adapters to conform to the `Wallet` interface
     const wallets = (0, vue_1.ref)([]);
-    // Sets default state when none of wallets connected
+    // Setting default state to yours
     function setDefaultState() {
         wallet.value = null;
         adapter.value = null;
         account.value = null;
         connected.value = false;
+        walletNetwork.value = null;
     }
     // When the wallets change, start listen for changes to their `readyState`
     (0, vue_1.watch)(adapters, (_value, _oldValue, onCleanup) => {

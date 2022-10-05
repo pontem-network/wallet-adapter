@@ -42,7 +42,6 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
   const autoConnect = ref<boolean>(false);
   const onError = ref<((error: WalletError) => void) | undefined>(undefined);
 
-  // init method which developer should call from Vue component to init store with wallets and parameters
   function init({
     wallets = [],
     onError: onHandleError,
@@ -66,15 +65,15 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
   const readyState = computed(() => adapter.value?.readyState || WalletReadyState.Unsupported);
   const walletNetwork = ref<any>(null);
 
-  // Wrap adapters to conform to the `Wallet` interface
   const wallets = ref<Wallet[]>([]);
 
-  // Sets default state when none of wallets connected
+  // Setting default state to yours
   function setDefaultState() {
     wallet.value = null;
     adapter.value = null;
     account.value = null;
     connected.value = false;
+    walletNetwork.value = null;
   }
 
   // When the wallets change, start listen for changes to their `readyState`
