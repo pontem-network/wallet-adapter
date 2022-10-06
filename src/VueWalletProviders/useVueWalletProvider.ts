@@ -43,11 +43,11 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
   const onError = ref<((error: WalletError) => void) | undefined>(undefined);
 
   function init({
-    wallets = [],
-    onError: onHandleError,
-    localStorageKey: lsKey,
-    autoConnect: autoConnection
-  }: IUseVueWalletProvider) {
+                  wallets = [],
+                  onError: onHandleError,
+                  localStorageKey: lsKey,
+                  autoConnect: autoConnection
+                }: IUseVueWalletProvider) {
     adapters.value = wallets;
     if (lsKey) localStorageKey.value = lsKey;
     if (autoConnection !== undefined) autoConnect.value = autoConnection;
@@ -167,13 +167,13 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
   }
 
   //Handle the adapter's connect event
-  function handleAfterConnect() {
+  async function handleAfterConnect() {
     if (!adapter.value) return;
-    connected.value = adapter.value.connected;
-    account.value = adapter.value.publicAccount;
     handleAddressChange();
     handleNetworkChange();
-    getNetwork();
+    await getNetwork();
+    connected.value = adapter.value.connected;
+    account.value = adapter.value.publicAccount;
   }
 
   // Handle the adapter's disconnect event
@@ -194,6 +194,9 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
     const selectedWallet = wallets.value.find(
       (wAdapter) => wAdapter.adapter.name === walletName.value
     );
+
+    if (!selectedWallet?.adapter) throw handleError(new WalletNotSelectedError());
+
     if (selectedWallet) {
       wallet.value = selectedWallet;
       adapter.value = selectedWallet.adapter;
@@ -201,9 +204,8 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
       account.value = selectedWallet.adapter.publicAccount;
     } else {
       setDefaultState();
+      return;
     }
-
-    if (!selectedWallet?.adapter) throw handleError(new WalletNotSelectedError());
 
     if (
       !(
@@ -223,6 +225,7 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
     connecting.value = true;
     try {
       await selectedWallet.adapter.connect();
+      await handleAfterConnect();
     } catch (error: any) {
       // Clear the selected wallet
       setWalletName(null);
@@ -230,7 +233,6 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
       throw error;
     } finally {
       connecting.value = false;
-      handleAfterConnect();
     }
   }
 
