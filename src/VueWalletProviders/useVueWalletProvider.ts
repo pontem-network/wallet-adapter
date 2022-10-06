@@ -167,13 +167,13 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
   }
 
   //Handle the adapter's connect event
-  function handleAfterConnect() {
+  async function handleAfterConnect() {
     if (!adapter.value) return;
-    connected.value = adapter.value.connected;
-    account.value = adapter.value.publicAccount;
     handleAddressChange();
     handleNetworkChange();
-    getNetwork();
+    await getNetwork();
+    connected.value = adapter.value.connected;
+    account.value = adapter.value.publicAccount;
   }
 
   // Handle the adapter's disconnect event
@@ -223,6 +223,7 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
     connecting.value = true;
     try {
       await selectedWallet.adapter.connect();
+      await handleAfterConnect();
     } catch (error: any) {
       // Clear the selected wallet
       setWalletName(null);
@@ -230,7 +231,6 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
       throw error;
     } finally {
       connecting.value = false;
-      handleAfterConnect();
     }
   }
 
