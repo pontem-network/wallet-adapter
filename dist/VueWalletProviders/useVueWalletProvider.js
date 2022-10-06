@@ -160,13 +160,15 @@ exports.useWalletProviderStore = (0, pinia_1.defineStore)('walletProviderStore',
     }
     //Handle the adapter's connect event
     function handleAfterConnect() {
-        if (!adapter.value)
-            return;
-        connected.value = adapter.value.connected;
-        account.value = adapter.value.publicAccount;
-        handleAddressChange();
-        handleNetworkChange();
-        getNetwork();
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!adapter.value)
+                return;
+            handleAddressChange();
+            handleNetworkChange();
+            yield getNetwork();
+            connected.value = adapter.value.connected;
+            account.value = adapter.value.publicAccount;
+        });
     }
     // Handle the adapter's disconnect event
     function handleDisconnect() {
@@ -209,6 +211,7 @@ exports.useWalletProviderStore = (0, pinia_1.defineStore)('walletProviderStore',
             connecting.value = true;
             try {
                 yield selectedWallet.adapter.connect();
+                yield handleAfterConnect();
             }
             catch (error) {
                 // Clear the selected wallet
@@ -218,7 +221,6 @@ exports.useWalletProviderStore = (0, pinia_1.defineStore)('walletProviderStore',
             }
             finally {
                 connecting.value = false;
-                handleAfterConnect();
             }
         });
     }
