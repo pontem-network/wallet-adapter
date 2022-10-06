@@ -6,8 +6,8 @@ export { EntryFunctionPayload } from 'aptos/src/generated/models/EntryFunctionPa
 export declare type TransactionPayload = TransactionPayload_EntryFunctionPayload | TransactionPayload_ScriptPayload | TransactionPayload_ModuleBundlePayload;
 export declare type HexEncodedBytes = string;
 export interface INetworkResponse {
-    chainId: string;
     name: string;
+    chainId?: string;
     api?: string;
 }
 //# sourceMappingURL=index.d.ts.map

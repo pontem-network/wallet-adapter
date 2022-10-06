@@ -1,6 +1,8 @@
-import { HexEncodedBytes, TransactionPayload } from '../types';
+import { HexEncodedBytes, INetworkResponse, TransactionPayload } from '../types';
 import {
+  WalletAccountError,
   WalletDisconnectionError,
+  WalletNetworkError,
   WalletNotConnectedError,
   WalletNotReadyError,
   WalletSignAndSubmitMessageError,
@@ -34,6 +36,9 @@ interface IAptosWallet {
   signTransaction(transaction: any, options?: any): Promise<Uint8Array | IApotsErrorResult>;
   signMessage(message: SignMessagePayload): Promise<SignMessageResponse>;
   disconnect(): Promise<void>;
+  network(): Promise<string>;
+  onAccountChange(listener: (address: string | {}) => void): Promise<void>;
+  onNetworkChange(listener: ({ networkName }: { networkName: string }) => void): Promise<void>;
 }
 
 interface AptosWindow extends Window {
@@ -223,6 +228,56 @@ export class AptosWalletAdapter extends BaseWalletAdapter {
     } catch (error: any) {
       const errMsg = error.message;
       this.emit('error', new WalletSignMessageError(errMsg));
+      throw error;
+    }
+  }
+
+  async onAccountChange(listener): Promise<void> {
+    try {
+      const wallet = this._wallet;
+      const provider = this._provider || window.aptos;
+      if (!wallet || !provider) throw new WalletNotConnectedError();
+      await provider?.onAccountChange(listener);
+    } catch (error: any) {
+      const errMsg = error.message;
+      this.emit('error', new WalletAccountError(errMsg));
+      throw error;
+    }
+  }
+
+  async network(): Promise<INetworkResponse> {
+    try {
+      const wallet = this._wallet;
+      const provider = this._provider || window.aptos;
+      if (!wallet || !provider) throw new WalletNotConnectedError();
+      const networkName = await provider?.network();
+      if (networkName) {
+        return { name: networkName };
+      } else {
+        throw new Error('Get network failed');
+      }
+    } catch (error: any) {
+      const errMsg = error.message;
+      this.emit('error', new WalletNetworkError(errMsg));
+      throw error;
+    }
+  }
+
+  async onNetworkChange(listener): Promise<void> {
+    try {
+      const wallet = this._wallet;
+      const provider = this._provider || window.aptos;
+      if (!wallet || !provider) throw new WalletNotConnectedError();
+      const collectResponse = async ({ networkName }) => {
+        if (!networkName) {
+          throw new Error('Network change failed');
+        }
+        return listener({ name: networkName });
+      };
+      await provider?.onNetworkChange(collectResponse);
+    } catch (error: any) {
+      const errMsg = error.message;
+      this.emit('error', new WalletNetworkError(errMsg));
       throw error;
     }
   }

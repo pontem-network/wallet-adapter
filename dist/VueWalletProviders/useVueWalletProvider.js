@@ -91,7 +91,7 @@ exports.useWalletProviderStore = (0, pinia_1.defineStore)('walletProviderStore',
     function handleAddressChange() {
         var _a;
         function handleChange(address) {
-            if (address) {
+            if (typeof address === 'string') {
                 account.value.address = address;
             }
         }

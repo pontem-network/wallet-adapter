@@ -1,4 +1,4 @@
-import { HexEncodedBytes, TransactionPayload } from '../types';
+import { HexEncodedBytes, INetworkResponse, TransactionPayload } from '../types';
 import { AccountKeys, BaseWalletAdapter, SignMessagePayload, SignMessageResponse, WalletName, WalletReadyState } from './BaseAdapter';
 interface IApotsErrorResult {
     code: number;
@@ -18,6 +18,11 @@ interface IAptosWallet {
     signTransaction(transaction: any, options?: any): Promise<Uint8Array | IApotsErrorResult>;
     signMessage(message: SignMessagePayload): Promise<SignMessageResponse>;
     disconnect(): Promise<void>;
+    network(): Promise<string>;
+    onAccountChange(listener: (address: string | {}) => void): Promise<void>;
+    onNetworkChange(listener: ({ networkName }: {
+        networkName: string;
+    }) => void): Promise<void>;
 }
 export declare const AptosWalletName: WalletName<"Petra">;
 export interface AptosWalletAdapterConfig {
@@ -45,6 +50,9 @@ export declare class AptosWalletAdapter extends BaseWalletAdapter {
         hash: HexEncodedBytes;
     }>;
     signMessage(msgPayload: SignMessagePayload): Promise<SignMessageResponse>;
+    onAccountChange(listener: any): Promise<void>;
+    network(): Promise<INetworkResponse>;
+    onNetworkChange(listener: any): Promise<void>;
 }
 export {};
 //# sourceMappingURL=PetraWallet.d.ts.map

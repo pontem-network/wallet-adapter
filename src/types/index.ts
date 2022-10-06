@@ -13,7 +13,7 @@ export type TransactionPayload =
 export type HexEncodedBytes = string;
 
 export interface INetworkResponse {
-  chainId: string;
   name: string;
+  chainId?: string;
   api?: string;
 }
