@@ -188,6 +188,8 @@ exports.useWalletProviderStore = (0, pinia_1.defineStore)('walletProviderStore',
             if (connecting.value || disconnecting.value || connected.value)
                 return;
             const selectedWallet = wallets.value.find((wAdapter) => wAdapter.adapter.name === walletName.value);
+            if (!(selectedWallet === null || selectedWallet === void 0 ? void 0 : selectedWallet.adapter))
+                throw handleError(new WalletProviders_1.WalletNotSelectedError());
             if (selectedWallet) {
                 wallet.value = selectedWallet;
                 adapter.value = selectedWallet.adapter;
@@ -196,9 +198,8 @@ exports.useWalletProviderStore = (0, pinia_1.defineStore)('walletProviderStore',
             }
             else {
                 setDefaultState();
+                return;
             }
-            if (!(selectedWallet === null || selectedWallet === void 0 ? void 0 : selectedWallet.adapter))
-                throw handleError(new WalletProviders_1.WalletNotSelectedError());
             if (!(selectedWallet.adapter.readyState === WalletAdapters_1.WalletReadyState.Installed ||
                 selectedWallet.adapter.readyState === WalletAdapters_1.WalletReadyState.Loadable)) {
                 // Clear the selected wallet

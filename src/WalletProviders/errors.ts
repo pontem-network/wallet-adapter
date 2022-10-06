@@ -79,3 +79,7 @@ export class WalletWindowBlockedError extends WalletError {
 export class WalletWindowClosedError extends WalletError {
   name = 'WalletWindowClosedError';
 }
+
+export class WalletNetworkError extends WalletError {
+  name = 'WalletNetworkError';
+}

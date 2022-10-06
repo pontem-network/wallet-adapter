@@ -43,11 +43,11 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
   const onError = ref<((error: WalletError) => void) | undefined>(undefined);
 
   function init({
-                  wallets = [],
-                  onError: onHandleError,
-                  localStorageKey: lsKey,
-                  autoConnect: autoConnection
-                }: IUseVueWalletProvider) {
+    wallets = [],
+    onError: onHandleError,
+    localStorageKey: lsKey,
+    autoConnect: autoConnection
+  }: IUseVueWalletProvider) {
     adapters.value = wallets;
     if (lsKey) localStorageKey.value = lsKey;
     if (autoConnection !== undefined) autoConnect.value = autoConnection;

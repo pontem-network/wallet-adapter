@@ -11,3 +11,9 @@ export type TransactionPayload =
   | TransactionPayload_ModuleBundlePayload;
 
 export type HexEncodedBytes = string;
+
+export interface INetworkResponse {
+  chainId: string;
+  name: string;
+  api?: string;
+}

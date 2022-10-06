@@ -182,7 +182,7 @@ class PontemWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             }
             catch (error) {
                 const errMsg = error.message;
-                this.emit('error', new errors_1.WalletSignMessageError(errMsg));
+                this.emit('error', new errors_1.WalletAccountError(errMsg));
                 throw error;
             }
         });
@@ -214,10 +214,13 @@ class PontemWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                 if (response) {
                     return response;
                 }
+                else {
+                    throw new Error('Get network failed');
+                }
             }
             catch (error) {
                 const errMsg = error.message;
-                this.emit('error', new errors_1.WalletSignMessageError(errMsg));
+                this.emit('error', new errors_1.WalletNetworkError(errMsg));
                 throw error;
             }
         });

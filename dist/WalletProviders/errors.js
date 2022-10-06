@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WalletWindowClosedError = exports.WalletWindowBlockedError = exports.WalletTimeoutError = exports.WalletSignTransactionError = exports.WalletSignAndSubmitMessageError = exports.WalletSignMessageError = exports.WalletSendTransactionError = exports.WalletNotConnectedError = exports.WalletKeypairError = exports.WalletPublicKeyError = exports.WalletAccountError = exports.WalletDisconnectionError = exports.WalletDisconnectedError = exports.WalletConnectionError = exports.WalletConfigError = exports.WalletLoadError = exports.WalletNotReadyError = exports.WalletNotSelectedError = exports.WalletError = void 0;
+exports.WalletNetworkError = exports.WalletWindowClosedError = exports.WalletWindowBlockedError = exports.WalletTimeoutError = exports.WalletSignTransactionError = exports.WalletSignAndSubmitMessageError = exports.WalletSignMessageError = exports.WalletSendTransactionError = exports.WalletNotConnectedError = exports.WalletKeypairError = exports.WalletPublicKeyError = exports.WalletAccountError = exports.WalletDisconnectionError = exports.WalletDisconnectedError = exports.WalletConnectionError = exports.WalletConfigError = exports.WalletLoadError = exports.WalletNotReadyError = exports.WalletNotSelectedError = exports.WalletError = void 0;
 class WalletError extends Error {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     constructor(message, error) {
@@ -135,4 +135,11 @@ class WalletWindowClosedError extends WalletError {
     }
 }
 exports.WalletWindowClosedError = WalletWindowClosedError;
+class WalletNetworkError extends WalletError {
+    constructor() {
+        super(...arguments);
+        this.name = 'WalletNetworkError';
+    }
+}
+exports.WalletNetworkError = WalletNetworkError;
 //# sourceMappingURL=errors.js.map

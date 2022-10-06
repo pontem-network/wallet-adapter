@@ -56,4 +56,7 @@ export declare class WalletWindowBlockedError extends WalletError {
 export declare class WalletWindowClosedError extends WalletError {
     name: string;
 }
+export declare class WalletNetworkError extends WalletError {
+    name: string;
+}
 //# sourceMappingURL=errors.d.ts.map

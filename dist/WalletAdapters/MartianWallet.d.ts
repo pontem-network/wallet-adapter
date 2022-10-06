@@ -1,5 +1,5 @@
 import { MaybeHexString } from 'aptos';
-import { TransactionPayload, HexEncodedBytes } from '../types';
+import { TransactionPayload, HexEncodedBytes, INetworkResponse } from '../types';
 import { AccountKeys, BaseWalletAdapter, SignMessagePayload, SignMessageResponse, WalletName, WalletReadyState } from './BaseAdapter';
 interface ConnectMartianAccount {
     address: MaybeHexString;
@@ -22,6 +22,12 @@ interface IMartianWallet {
     signTransaction(transaction: TransactionPayload): Promise<Uint8Array>;
     signMessage(message: SignMessagePayload): Promise<SignMessageResponse>;
     disconnect(): Promise<void>;
+    network(): Promise<string>;
+    onAccountChange(listener: (address: string | undefined) => void): Promise<void>;
+    onNetworkChange(listener: (network: string | undefined) => void): Promise<void>;
+    getChainId(): Promise<{
+        chainId: number;
+    }>;
 }
 export declare const MartianWalletName: WalletName<"Martian">;
 export interface MartianWalletAdapterConfig {
@@ -49,6 +55,9 @@ export declare class MartianWalletAdapter extends BaseWalletAdapter {
         hash: HexEncodedBytes;
     }>;
     signMessage(msgPayload: SignMessagePayload): Promise<SignMessageResponse>;
+    onAccountChange(listener: any): Promise<void>;
+    network(): Promise<INetworkResponse>;
+    onNetworkChange(listener: any): Promise<void>;
 }
 export {};
 //# sourceMappingURL=MartianWallet.d.ts.map

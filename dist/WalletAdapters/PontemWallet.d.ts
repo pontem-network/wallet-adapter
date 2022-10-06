@@ -1,16 +1,11 @@
 import { MaybeHexString } from 'aptos';
-import { TransactionPayload, HexEncodedBytes } from '../types';
+import { TransactionPayload, HexEncodedBytes, INetworkResponse } from '../types';
 import { AccountKeys, BaseWalletAdapter, SignMessagePayload, SignMessageResponse, WalletName, WalletReadyState } from './BaseAdapter';
 interface ConnectPontemAccount {
     address: MaybeHexString;
     method: string;
     publicKey: MaybeHexString;
     status: number;
-}
-export interface IPontemNetwork {
-    api: string;
-    chainId: string;
-    name: string;
 }
 interface PontemAccount {
     address: MaybeHexString;
@@ -36,13 +31,9 @@ interface IPontemWallet {
         result: SignMessageResponse;
     }>;
     disconnect(): Promise<void>;
-    network(): Promise<{
-        api: string;
-        chainId: string;
-        name: string;
-    }>;
+    network(): Promise<INetworkResponse>;
     onAccountChange(listener: (address: string | undefined) => void): Promise<void>;
-    onNetworkChange(listener: (network: IPontemNetwork | undefined) => void): Promise<void>;
+    onNetworkChange(listener: (network: INetworkResponse | undefined) => void): Promise<void>;
 }
 export declare const PontemWalletName: WalletName<"Pontem">;
 export interface PontemWalletAdapterConfig {
@@ -72,11 +63,7 @@ export declare class PontemWalletAdapter extends BaseWalletAdapter {
     signMessage(messagePayload: SignMessagePayload): Promise<SignMessageResponse>;
     onAccountChange(listener: any): Promise<void>;
     onNetworkChange(listener: any): Promise<void>;
-    network(): Promise<{
-        api: string;
-        chainId: string;
-        name: string;
-    }>;
+    network(): Promise<INetworkResponse>;
 }
 export {};
 //# sourceMappingURL=PontemWallet.d.ts.map

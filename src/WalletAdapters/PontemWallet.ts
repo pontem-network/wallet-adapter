@@ -1,7 +1,9 @@
 import { MaybeHexString } from 'aptos';
-import { TransactionPayload, HexEncodedBytes } from '../types';
+import { TransactionPayload, HexEncodedBytes, INetworkResponse } from '../types';
 import {
+  WalletAccountError,
   WalletDisconnectionError,
+  WalletNetworkError,
   WalletNotConnectedError,
   WalletNotReadyError,
   WalletSignAndSubmitMessageError,
@@ -23,12 +25,6 @@ interface ConnectPontemAccount {
   method: string;
   publicKey: MaybeHexString;
   status: number;
-}
-
-export interface IPontemNetwork {
-  api: string;
-  chainId: string;
-  name: string;
 }
 
 interface PontemAccount {
@@ -58,13 +54,9 @@ interface IPontemWallet {
     result: SignMessageResponse;
   }>;
   disconnect(): Promise<void>;
-  network(): Promise<{
-    api: string;
-    chainId: string;
-    name: string;
-  }>;
+  network(): Promise<INetworkResponse>;
   onAccountChange(listener: (address: string | undefined) => void): Promise<void>;
-  onNetworkChange(listener: (network: IPontemNetwork | undefined) => void): Promise<void>;
+  onNetworkChange(listener: (network: INetworkResponse | undefined) => void): Promise<void>;
 }
 
 interface PontemWindow extends Window {
@@ -266,7 +258,7 @@ export class PontemWalletAdapter extends BaseWalletAdapter {
       await provider?.onAccountChange(listener);
     } catch (error: any) {
       const errMsg = error.message;
-      this.emit('error', new WalletSignMessageError(errMsg));
+      this.emit('error', new WalletAccountError(errMsg));
       throw error;
     }
   }
@@ -284,7 +276,7 @@ export class PontemWalletAdapter extends BaseWalletAdapter {
     }
   }
 
-  async network(): Promise<{ api: string; chainId: string; name: string }> {
+  async network(): Promise<INetworkResponse> {
     try {
       const wallet = this._wallet;
       const provider = this._provider || window.pontem;
@@ -292,10 +284,12 @@ export class PontemWalletAdapter extends BaseWalletAdapter {
       const response = await provider?.network();
       if (response) {
         return response;
+      } else {
+        throw new Error('Get network failed');
       }
     } catch (error: any) {
       const errMsg = error.message;
-      this.emit('error', new WalletSignMessageError(errMsg));
+      this.emit('error', new WalletNetworkError(errMsg));
       throw error;
     }
   }

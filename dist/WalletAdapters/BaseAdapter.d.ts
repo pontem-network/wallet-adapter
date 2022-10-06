@@ -1,5 +1,5 @@
 import { MaybeHexString } from 'aptos';
-import { TransactionPayload, HexEncodedBytes } from '../types';
+import { TransactionPayload, HexEncodedBytes, INetworkResponse } from '../types';
 import EventEmitter from 'eventemitter3';
 declare global {
     interface Window {
@@ -60,12 +60,8 @@ export interface WalletAdapterProps<Name extends string = string> {
     signTransaction(transaction: TransactionPayload, options?: any): Promise<Uint8Array>;
     signMessage(message: string | SignMessagePayload | Uint8Array): Promise<string | SignMessageResponse>;
     onAccountChange?(listener: (address: string | undefined) => void): Promise<void>;
-    onNetworkChange?(listener: (network: any) => void): Promise<void>;
-    network?(): Promise<{
-        api: string;
-        chainId: string;
-        name: string;
-    }>;
+    onNetworkChange?(listener: (network: INetworkResponse | undefined) => void): Promise<void>;
+    network?(): Promise<INetworkResponse>;
 }
 export declare type WalletAdapter<Name extends string = string> = WalletAdapterProps<Name> & EventEmitter<WalletAdapterEvents>;
 export interface SignMessagePayload {

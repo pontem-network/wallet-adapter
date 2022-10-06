@@ -1,7 +1,9 @@
 import { MaybeHexString } from 'aptos';
-import { TransactionPayload, HexEncodedBytes } from '../types';
+import { TransactionPayload, HexEncodedBytes, INetworkResponse } from '../types';
 import {
+  WalletAccountError,
   WalletDisconnectionError,
+  WalletNetworkError,
   WalletNotConnectedError,
   WalletNotReadyError,
   WalletSignAndSubmitMessageError,
@@ -40,6 +42,10 @@ interface IMartianWallet {
   signTransaction(transaction: TransactionPayload): Promise<Uint8Array>;
   signMessage(message: SignMessagePayload): Promise<SignMessageResponse>;
   disconnect(): Promise<void>;
+  network(): Promise<string>;
+  onAccountChange(listener: (address: string | undefined) => void): Promise<void>;
+  onNetworkChange(listener: (network: string | undefined) => void): Promise<void>;
+  getChainId(): Promise<{ chainId: number }>;
 }
 
 interface MartianWindow extends Window {
@@ -236,6 +242,58 @@ export class MartianWalletAdapter extends BaseWalletAdapter {
     } catch (error: any) {
       const errMsg = error.message;
       this.emit('error', new WalletSignMessageError(errMsg));
+      throw error;
+    }
+  }
+
+  async onAccountChange(listener): Promise<void> {
+    try {
+      const wallet = this._wallet;
+      const provider = this._provider || window.martian;
+      if (!wallet || !provider) throw new WalletNotConnectedError();
+      await provider?.onAccountChange(listener);
+    } catch (error: any) {
+      const errMsg = error.message;
+      this.emit('error', new WalletAccountError(errMsg));
+      throw error;
+    }
+  }
+
+  async network(): Promise<INetworkResponse> {
+    try {
+      const wallet = this._wallet;
+      const provider = this._provider || window.martian;
+      if (!wallet || !provider) throw new WalletNotConnectedError();
+      const networkName = await provider?.network();
+      const { chainId } = await provider?.getChainId();
+      if (chainId && networkName) {
+        return { chainId: chainId.toString(), name: networkName };
+      } else {
+        throw new Error('Get network failed');
+      }
+    } catch (error: any) {
+      const errMsg = error.message;
+      this.emit('error', new WalletNetworkError(errMsg));
+      throw error;
+    }
+  }
+
+  async onNetworkChange(listener): Promise<void> {
+    try {
+      const wallet = this._wallet;
+      const provider = this._provider || window.martian;
+      if (!wallet || !provider) throw new WalletNotConnectedError();
+      const collectResponse = async (networkName: string) => {
+        const { chainId } = await provider?.getChainId();
+        if (!(chainId && networkName)) {
+          throw new Error('Network change failed');
+        }
+        return listener({ chainId: chainId.toString(), name: networkName });
+      };
+      await provider?.onNetworkChange(collectResponse);
+    } catch (error: any) {
+      const errMsg = error.message;
+      this.emit('error', new WalletNetworkError(errMsg));
       throw error;
     }
   }
