@@ -1,6 +1,5 @@
-import { MaybeHexString } from 'aptos';
-import { TransactionPayload, HexEncodedBytes } from '../types';
-import { AccountKeys, BaseWalletAdapter, WalletName, WalletReadyState } from './BaseAdapter';
+import { MaybeHexString, Types } from 'aptos';
+import { AccountKeys, BaseWalletAdapter, NetworkInfo, WalletAdapterNetwork, WalletName, WalletReadyState } from './BaseAdapter';
 interface IHippoWallet {
     connect: () => Promise<{
         address: MaybeHexString;
@@ -24,22 +23,28 @@ export declare class HippoExtensionWalletAdapter extends BaseWalletAdapter {
     url: string;
     icon: string;
     protected _provider: IHippoWallet | undefined;
+    protected _network: WalletAdapterNetwork;
+    protected _chainId: string;
+    protected _api: string;
     protected _timeout: number;
     protected _readyState: WalletReadyState;
     protected _connecting: boolean;
     protected _wallet: any | null;
     constructor({ timeout }?: HippoExtensionWalletAdapterConfig);
     get publicAccount(): AccountKeys;
+    get network(): NetworkInfo;
     get connecting(): boolean;
     get connected(): boolean;
     get readyState(): WalletReadyState;
     connect(): Promise<void>;
     disconnect(): Promise<void>;
-    signTransaction(transaction: TransactionPayload): Promise<Uint8Array>;
-    signAndSubmitTransaction(transaction: TransactionPayload): Promise<{
-        hash: HexEncodedBytes;
+    signTransaction(transaction: Types.TransactionPayload): Promise<Uint8Array>;
+    signAndSubmitTransaction(transaction: Types.TransactionPayload): Promise<{
+        hash: Types.HexEncodedBytes;
     }>;
     signMessage(message: string): Promise<string>;
+    onAccountChange(): Promise<void>;
+    onNetworkChange(): Promise<void>;
 }
 export {};
 //# sourceMappingURL=HippoExtensionWallet.d.ts.map

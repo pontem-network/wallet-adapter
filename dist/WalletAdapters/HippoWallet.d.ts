@@ -1,6 +1,5 @@
-import { MaybeHexString } from 'aptos';
-import { TransactionPayload, HexEncodedBytes } from '../types';
-import { AccountKeys, BaseWalletAdapter, WalletName, WalletReadyState } from './BaseAdapter';
+import { MaybeHexString, Types } from 'aptos';
+import { AccountKeys, BaseWalletAdapter, NetworkInfo, WalletAdapterNetwork, WalletName, WalletReadyState } from './BaseAdapter';
 export declare const HippoWalletName: WalletName<"Hippo Web">;
 export interface HippoWalletAdapterConfig {
     provider?: string;
@@ -11,12 +10,16 @@ export declare class HippoWalletAdapter extends BaseWalletAdapter {
     url: string;
     icon: string;
     protected _provider: string | undefined;
+    protected _network: WalletAdapterNetwork;
+    protected _chainId: string;
+    protected _api: string;
     protected _timeout: number;
     protected _readyState: WalletReadyState;
     protected _connecting: boolean;
     protected _wallet: any | null;
     constructor({ timeout }?: HippoWalletAdapterConfig);
     get publicAccount(): AccountKeys;
+    get network(): NetworkInfo;
     get connecting(): boolean;
     get connected(): boolean;
     get readyState(): WalletReadyState;
@@ -39,11 +42,13 @@ export declare class HippoWalletAdapter extends BaseWalletAdapter {
     }>) => void;
     connect(): Promise<void>;
     disconnect(): Promise<void>;
-    signTransaction(transaction: TransactionPayload): Promise<Uint8Array>;
-    signAndSubmitTransaction(transaction: TransactionPayload): Promise<{
-        hash: HexEncodedBytes;
+    signTransaction(transaction: Types.TransactionPayload): Promise<Uint8Array>;
+    signAndSubmitTransaction(transaction: Types.TransactionPayload): Promise<{
+        hash: Types.HexEncodedBytes;
     }>;
     signMessage(message: string): Promise<string>;
+    onAccountChange(): Promise<void>;
+    onNetworkChange(): Promise<void>;
     private _beforeUnload;
 }
 //# sourceMappingURL=HippoWallet.d.ts.map

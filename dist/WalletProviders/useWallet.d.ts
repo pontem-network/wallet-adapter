@@ -1,6 +1,6 @@
 /// <reference types="react" />
-import { TransactionPayload, HexEncodedBytes } from '../types';
-import { AccountKeys, SignMessagePayload, SignMessageResponse, WalletAdapter, WalletName, WalletReadyState } from '../WalletAdapters/BaseAdapter';
+import { Types } from 'aptos';
+import { AccountKeys, NetworkInfo, SignMessagePayload, SignMessageResponse, WalletAdapter, WalletName, WalletReadyState } from '../WalletAdapters/BaseAdapter';
 export interface Wallet {
     adapter: WalletAdapter;
     readyState: WalletReadyState;
@@ -13,13 +13,14 @@ export interface WalletContextState {
     connecting: boolean;
     connected: boolean;
     disconnecting: boolean;
+    network: NetworkInfo;
     select(walletName: WalletName): void;
     connect(): Promise<void>;
     disconnect(): Promise<void>;
-    signAndSubmitTransaction(transaction: TransactionPayload, options?: any): Promise<{
-        hash: HexEncodedBytes;
+    signAndSubmitTransaction(transaction: Types.TransactionPayload, options?: any): Promise<{
+        hash: Types.HexEncodedBytes;
     }>;
-    signTransaction(transaction: TransactionPayload, options?: any): Promise<Uint8Array>;
+    signTransaction(transaction: Types.TransactionPayload, options?: any): Promise<Uint8Array>;
     signMessage(message: string | SignMessagePayload | Uint8Array): Promise<SignMessageResponse | string>;
 }
 export declare const WalletContext: import("react").Context<WalletContextState>;

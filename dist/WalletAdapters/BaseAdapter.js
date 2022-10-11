@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.scopePollingDetectionStrategy = exports.BaseWalletAdapter = exports.WalletReadyState = exports.EventEmitter = void 0;
+exports.scopePollingDetectionStrategy = exports.BaseWalletAdapter = exports.WalletAdapterNetwork = exports.WalletReadyState = exports.EventEmitter = void 0;
 const eventemitter3_1 = __importDefault(require("eventemitter3"));
 exports.EventEmitter = eventemitter3_1.default;
 var WalletReadyState;
@@ -26,6 +26,12 @@ var WalletReadyState;
      */
     WalletReadyState["Unsupported"] = "Unsupported";
 })(WalletReadyState = exports.WalletReadyState || (exports.WalletReadyState = {}));
+var WalletAdapterNetwork;
+(function (WalletAdapterNetwork) {
+    WalletAdapterNetwork["Mainnet"] = "mainnet";
+    WalletAdapterNetwork["Testnet"] = "testnet";
+    WalletAdapterNetwork["Devnet"] = "devnet";
+})(WalletAdapterNetwork = exports.WalletAdapterNetwork || (exports.WalletAdapterNetwork = {}));
 class BaseWalletAdapter extends eventemitter3_1.default {
     get connected() {
         return !!this.publicAccount.publicKey;

@@ -49,6 +49,13 @@ class HyperPayWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             authKey: ((_c = this._wallet) === null || _c === void 0 ? void 0 : _c.authKey) || null
         };
     }
+    get network() {
+        return {
+            name: this._network,
+            api: this._api,
+            chainId: this._chainId
+        };
+    }
     get connecting() {
         return this._connecting;
     }
@@ -171,6 +178,38 @@ class HyperPayWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             catch (error) {
                 const errMsg = error.message;
                 this.emit('error', new errors_1.WalletSignMessageError(errMsg));
+                throw error;
+            }
+        });
+    }
+    onAccountChange() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const wallet = this._wallet;
+                const provider = this._provider || window.hyperpay;
+                if (!wallet || !provider)
+                    throw new errors_1.WalletNotConnectedError();
+                //To be implemented
+            }
+            catch (error) {
+                const errMsg = error.message;
+                this.emit('error', new errors_1.WalletAccountChangeError(errMsg));
+                throw error;
+            }
+        });
+    }
+    onNetworkChange() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const wallet = this._wallet;
+                const provider = this._provider || window.hyperpay;
+                if (!wallet || !provider)
+                    throw new errors_1.WalletNotConnectedError();
+                //To be implemented
+            }
+            catch (error) {
+                const errMsg = error.message;
+                this.emit('error', new errors_1.WalletNetworkChangeError(errMsg));
                 throw error;
             }
         });

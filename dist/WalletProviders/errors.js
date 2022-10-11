@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WalletNetworkError = exports.WalletWindowClosedError = exports.WalletWindowBlockedError = exports.WalletTimeoutError = exports.WalletSignTransactionError = exports.WalletSignAndSubmitMessageError = exports.WalletSignMessageError = exports.WalletSendTransactionError = exports.WalletNotConnectedError = exports.WalletKeypairError = exports.WalletPublicKeyError = exports.WalletAccountError = exports.WalletDisconnectionError = exports.WalletDisconnectedError = exports.WalletConnectionError = exports.WalletConfigError = exports.WalletLoadError = exports.WalletNotReadyError = exports.WalletNotSelectedError = exports.WalletError = void 0;
+exports.WalletWindowClosedError = exports.WalletWindowBlockedError = exports.WalletTimeoutError = exports.WalletSignTransactionError = exports.WalletSignAndSubmitMessageError = exports.WalletSignMessageError = exports.WalletSendTransactionError = exports.WalletNotConnectedError = exports.WalletKeypairError = exports.WalletPublicKeyError = exports.WalletNetworkChangeError = exports.WalletAccountChangeError = exports.WalletGetNetworkError = exports.WalletAccountError = exports.WalletDisconnectionError = exports.WalletDisconnectedError = exports.WalletConnectionError = exports.WalletConfigError = exports.WalletLoadError = exports.WalletNotReadyError = exports.WalletNotSelectedError = exports.WalletError = void 0;
 class WalletError extends Error {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     constructor(message, error) {
@@ -65,6 +65,27 @@ class WalletAccountError extends WalletError {
     }
 }
 exports.WalletAccountError = WalletAccountError;
+class WalletGetNetworkError extends WalletError {
+    constructor() {
+        super(...arguments);
+        this.name = 'WalletGetNetworkError';
+    }
+}
+exports.WalletGetNetworkError = WalletGetNetworkError;
+class WalletAccountChangeError extends WalletError {
+    constructor() {
+        super(...arguments);
+        this.name = 'WalletAccountChangeError';
+    }
+}
+exports.WalletAccountChangeError = WalletAccountChangeError;
+class WalletNetworkChangeError extends WalletError {
+    constructor() {
+        super(...arguments);
+        this.name = 'WalletNetworkChangeError';
+    }
+}
+exports.WalletNetworkChangeError = WalletNetworkChangeError;
 class WalletPublicKeyError extends WalletError {
     constructor() {
         super(...arguments);
@@ -135,11 +156,4 @@ class WalletWindowClosedError extends WalletError {
     }
 }
 exports.WalletWindowClosedError = WalletWindowClosedError;
-class WalletNetworkError extends WalletError {
-    constructor() {
-        super(...arguments);
-        this.name = 'WalletNetworkError';
-    }
-}
-exports.WalletNetworkError = WalletNetworkError;
 //# sourceMappingURL=errors.js.map

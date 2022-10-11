@@ -668,6 +668,11 @@ jest-matcher-utils@^27.0.0:
     jest-get-type "^27.5.1"
     pretty-format "^27.5.1"
 
+js-sha3@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.npmjs.org/js-sha3/-/js-sha3-0.8.0.tgz"
+  integrity sha512-gF1cRrHhIzNfToc802P800N8PpXS+evLLXfsVpowqmAFR9uwbi89WvXg2QspOmXL8QL86J4T1EpFu+yUkwJY3Q==
+
 "js-tokens@^3.0.0 || ^4.0.0":
   version "4.0.0"
   resolved "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz"

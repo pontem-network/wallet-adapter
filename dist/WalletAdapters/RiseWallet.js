@@ -16,7 +16,7 @@ exports.RiseWalletName = 'Rise Wallet';
 class RiseWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
     constructor({ 
     // provider,
-    // network = WalletAdapterNetwork.Mainnet,
+    // network = WalletAdapterNetwork.Testnet,
     timeout = 10000 } = {}) {
         super();
         this.name = exports.RiseWalletName;
@@ -26,7 +26,7 @@ class RiseWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             ? BaseAdapter_1.WalletReadyState.Unsupported
             : BaseAdapter_1.WalletReadyState.NotDetected;
         this._provider = typeof window !== 'undefined' ? window.rise : undefined;
-        // this._network = network;
+        this._network = undefined;
         this._timeout = timeout;
         this._connecting = false;
         this._wallet = null;
@@ -47,6 +47,13 @@ class RiseWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             publicKey: ((_a = this._wallet) === null || _a === void 0 ? void 0 : _a.publicKey) || null,
             address: ((_b = this._wallet) === null || _b === void 0 ? void 0 : _b.address) || null,
             authKey: ((_c = this._wallet) === null || _c === void 0 ? void 0 : _c.authKey) || null
+        };
+    }
+    get network() {
+        return {
+            name: this._network,
+            api: this._api,
+            chainId: this._chainId
         };
     }
     get connecting() {
@@ -77,6 +84,21 @@ class RiseWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                 const response = yield (provider === null || provider === void 0 ? void 0 : provider.connect());
                 if (!response) {
                     throw new WalletProviders_1.WalletNotConnectedError('User has rejected the request');
+                }
+                // TODO - remove this check in the future
+                //  provider.network is still not live and we want smooth transition
+                if (provider === null || provider === void 0 ? void 0 : provider.network) {
+                    try {
+                        const { chainId, api, name } = yield provider.network();
+                        this._network = name;
+                        this._chainId = chainId;
+                        this._api = api;
+                    }
+                    catch (error) {
+                        const errMsg = error.message;
+                        this.emit('error', new WalletProviders_1.WalletGetNetworkError(errMsg));
+                        throw error;
+                    }
                 }
                 const account = yield (provider === null || provider === void 0 ? void 0 : provider.account());
                 if (account) {
@@ -180,6 +202,38 @@ class RiseWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             catch (error) {
                 const errMsg = error.message;
                 this.emit('error', new WalletProviders_1.WalletSignMessageError(errMsg));
+                throw error;
+            }
+        });
+    }
+    onAccountChange() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const wallet = this._wallet;
+                const provider = this._provider || window.rise;
+                if (!wallet || !provider)
+                    throw new WalletProviders_1.WalletNotConnectedError();
+                //To be implemented
+            }
+            catch (error) {
+                const errMsg = error.message;
+                this.emit('error', new WalletProviders_1.WalletAccountChangeError(errMsg));
+                throw error;
+            }
+        });
+    }
+    onNetworkChange() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const wallet = this._wallet;
+                const provider = this._provider || window.rise;
+                if (!wallet || !provider)
+                    throw new WalletProviders_1.WalletNotConnectedError();
+                //To be implemented
+            }
+            catch (error) {
+                const errMsg = error.message;
+                this.emit('error', new WalletProviders_1.WalletNetworkChangeError(errMsg));
                 throw error;
             }
         });

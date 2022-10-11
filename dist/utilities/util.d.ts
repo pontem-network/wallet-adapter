@@ -1,5 +1,5 @@
-import { TransactionPayload } from 'aptos/src/generated';
-export declare const payloadV1ToV0: (payload: TransactionPayload) => {
+import { Types } from 'aptos';
+export declare const payloadV1ToV0: (payload: Types.TransactionPayload) => {
     type: string;
     function: string;
     type_arguments: string[];

@@ -16,7 +16,7 @@ exports.AptosWalletName = 'Petra';
 class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
     constructor({ 
     // provider,
-    // network = WalletAdapterNetwork.Mainnet,
+    // network = WalletAdapterNetwork.Testnet,
     timeout = 10000 } = {}) {
         super();
         this.name = exports.AptosWalletName;
@@ -26,7 +26,7 @@ class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             ? BaseAdapter_1.WalletReadyState.Unsupported
             : BaseAdapter_1.WalletReadyState.NotDetected;
         this._provider = typeof window !== 'undefined' ? window.aptos : undefined;
-        // this._network = network;
+        this._network = undefined;
         this._timeout = timeout;
         this._connecting = false;
         this._wallet = null;
@@ -47,6 +47,13 @@ class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             publicKey: ((_a = this._wallet) === null || _a === void 0 ? void 0 : _a.publicKey) || null,
             address: ((_b = this._wallet) === null || _b === void 0 ? void 0 : _b.address) || null,
             authKey: ((_c = this._wallet) === null || _c === void 0 ? void 0 : _c.authKey) || null
+        };
+    }
+    get network() {
+        return {
+            name: this._network,
+            api: this._api,
+            chainId: this._chainId
         };
     }
     get connecting() {
@@ -80,6 +87,19 @@ class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                     publicKey: response === null || response === void 0 ? void 0 : response.publicKey,
                     isConnected: true
                 };
+                try {
+                    const name = yield (provider === null || provider === void 0 ? void 0 : provider.network());
+                    const chainId = null;
+                    const api = null;
+                    this._network = name;
+                    this._chainId = chainId;
+                    this._api = api;
+                }
+                catch (error) {
+                    const errMsg = error.message;
+                    this.emit('error', new errors_1.WalletGetNetworkError(errMsg));
+                    throw error;
+                }
                 this.emit('connect', this._wallet.publicKey);
             }
             catch (error) {
@@ -172,62 +192,46 @@ class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             }
         });
     }
-    onAccountChange(listener) {
+    onAccountChange() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const wallet = this._wallet;
                 const provider = this._provider || window.aptos;
                 if (!wallet || !provider)
                     throw new errors_1.WalletNotConnectedError();
-                yield (provider === null || provider === void 0 ? void 0 : provider.onAccountChange(listener));
-            }
-            catch (error) {
-                const errMsg = error.message;
-                this.emit('error', new errors_1.WalletAccountError(errMsg));
-                throw error;
-            }
-        });
-    }
-    network() {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const wallet = this._wallet;
-                const provider = this._provider || window.aptos;
-                if (!wallet || !provider)
-                    throw new errors_1.WalletNotConnectedError();
-                const networkName = yield (provider === null || provider === void 0 ? void 0 : provider.network());
-                if (networkName) {
-                    return { name: networkName };
-                }
-                else {
-                    throw new Error('Get network failed');
-                }
-            }
-            catch (error) {
-                const errMsg = error.message;
-                this.emit('error', new errors_1.WalletNetworkError(errMsg));
-                throw error;
-            }
-        });
-    }
-    onNetworkChange(listener) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const wallet = this._wallet;
-                const provider = this._provider || window.aptos;
-                if (!wallet || !provider)
-                    throw new errors_1.WalletNotConnectedError();
-                const collectResponse = ({ networkName }) => __awaiter(this, void 0, void 0, function* () {
-                    if (!networkName) {
-                        throw new Error('Network change failed');
-                    }
-                    return listener({ name: networkName });
+                const handleAccountChange = (newAccount) => __awaiter(this, void 0, void 0, function* () {
+                    var _a, _b, _c;
+                    console.log('account Changed >>>', newAccount);
+                    // Petra extension currently didn't return the new Account
+                    this._wallet = Object.assign(Object.assign({}, this._wallet), { publicKey: newAccount.publicKey || ((_a = this._wallet) === null || _a === void 0 ? void 0 : _a.publicKey), authKey: newAccount.authKey || ((_b = this._wallet) === null || _b === void 0 ? void 0 : _b.authKey), address: newAccount.address || ((_c = this._wallet) === null || _c === void 0 ? void 0 : _c.address) });
+                    this.emit('accountChange', newAccount.publicKey);
                 });
-                yield (provider === null || provider === void 0 ? void 0 : provider.onNetworkChange(collectResponse));
+                yield (provider === null || provider === void 0 ? void 0 : provider.onAccountChange(handleAccountChange));
             }
             catch (error) {
                 const errMsg = error.message;
-                this.emit('error', new errors_1.WalletNetworkError(errMsg));
+                this.emit('error', new errors_1.WalletAccountChangeError(errMsg));
+                throw error;
+            }
+        });
+    }
+    onNetworkChange() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const wallet = this._wallet;
+                const provider = this._provider || window.aptos;
+                if (!wallet || !provider)
+                    throw new errors_1.WalletNotConnectedError();
+                const handleNetworkChange = (newNetwork) => __awaiter(this, void 0, void 0, function* () {
+                    console.log('network Changed >>>', newNetwork);
+                    this._network = newNetwork.networkName;
+                    this.emit('networkChange', this._network);
+                });
+                yield (provider === null || provider === void 0 ? void 0 : provider.onNetworkChange(handleNetworkChange));
+            }
+            catch (error) {
+                const errMsg = error.message;
+                this.emit('error', new errors_1.WalletNetworkChangeError(errMsg));
                 throw error;
             }
         });

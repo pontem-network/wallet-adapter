@@ -1,5 +1,5 @@
-import { HexEncodedBytes, TransactionPayload } from '../types';
-import { AccountKeys, BaseWalletAdapter, SignMessagePayload, SignMessageResponse, WalletName, WalletReadyState } from './BaseAdapter';
+import { Types } from 'aptos';
+import { AccountKeys, BaseWalletAdapter, NetworkInfo, SignMessagePayload, SignMessageResponse, WalletAdapterNetwork, WalletName, WalletReadyState } from './BaseAdapter';
 interface IFletchWallet {
     connect: () => Promise<{
         Address: string;
@@ -36,22 +36,28 @@ export declare class FletchWalletAdapter extends BaseWalletAdapter {
     url: string;
     icon: string;
     protected _provider: IFletchWallet;
+    protected _network: WalletAdapterNetwork;
+    protected _chainId: string;
+    protected _api: string;
     protected _timeout: number;
     protected _readyState: WalletReadyState;
     protected _connecting: boolean;
     protected _wallet: any | null;
     constructor({ timeout }?: FletchWalletAdapterConfig);
     get publicAccount(): AccountKeys;
+    get network(): NetworkInfo;
     get connecting(): boolean;
     get connected(): boolean;
     get readyState(): WalletReadyState;
     connect(): Promise<void>;
     disconnect(): Promise<void>;
-    signTransaction(transaction: TransactionPayload): Promise<Uint8Array>;
-    signAndSubmitTransaction(transaction: TransactionPayload): Promise<{
-        hash: HexEncodedBytes;
+    signTransaction(transaction: Types.TransactionPayload): Promise<Uint8Array>;
+    signAndSubmitTransaction(transaction: Types.TransactionPayload): Promise<{
+        hash: Types.HexEncodedBytes;
     }>;
     signMessage(msgPayload: SignMessagePayload): Promise<SignMessageResponse>;
+    onAccountChange(): Promise<void>;
+    onNetworkChange(): Promise<void>;
 }
 export {};
 //# sourceMappingURL=FletchWallet.d.ts.map

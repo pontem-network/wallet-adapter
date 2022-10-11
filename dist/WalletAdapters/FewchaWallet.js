@@ -20,7 +20,7 @@ exports.FewchaWalletName = 'Fewcha';
 class FewchaWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
     constructor({ 
     // provider = WEBWALLET_URL,
-    // network = WalletAdapterNetwork.Mainnet,
+    // network = WalletAdapterNetwork.Testnet,
     timeout = 10000 } = {}) {
         super();
         this.name = exports.FewchaWalletName;
@@ -29,7 +29,7 @@ class FewchaWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
         this._readyState = typeof window === 'undefined' || typeof document === 'undefined'
             ? BaseAdapter_1.WalletReadyState.Unsupported
             : BaseAdapter_1.WalletReadyState.NotDetected;
-        // this._network = network;
+        this._network = undefined;
         this._provider = typeof window !== 'undefined' ? new web3_1.default().action : undefined;
         this._timeout = timeout;
         this._connecting = false;
@@ -52,6 +52,13 @@ class FewchaWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             publicKey: ((_a = this._wallet) === null || _a === void 0 ? void 0 : _a.publicKey) || null,
             address: ((_b = this._wallet) === null || _b === void 0 ? void 0 : _b.address) || null,
             authKey: ((_c = this._wallet) === null || _c === void 0 ? void 0 : _c.authKey) || null
+        };
+    }
+    get network() {
+        return {
+            name: this._network,
+            api: this._api,
+            chainId: this._chainId
         };
     }
     get connecting() {
@@ -94,7 +101,19 @@ class FewchaWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                     accountDetail = Object.assign({}, accountResp.data);
                 }
                 this._wallet = Object.assign({ connected: true }, accountDetail);
-                this._provider = provider;
+                try {
+                    const { data: name } = yield (provider === null || provider === void 0 ? void 0 : provider.getNetwork());
+                    const chainId = null;
+                    const api = null;
+                    this._network = name;
+                    this._chainId = chainId;
+                    this._api = api;
+                }
+                catch (error) {
+                    const errMsg = error.message;
+                    this.emit('error', new errors_1.WalletGetNetworkError(errMsg));
+                    throw error;
+                }
                 this.emit('connect', this._wallet.publicKey);
             }
             catch (error) {
@@ -197,6 +216,38 @@ class FewchaWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             catch (error) {
                 const errMsg = error.message;
                 this.emit('error', new errors_1.WalletSignMessageError(errMsg));
+                throw error;
+            }
+        });
+    }
+    onAccountChange() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const wallet = this._wallet;
+                const provider = this._provider || window.fewcha;
+                if (!wallet || !provider)
+                    throw new errors_1.WalletNotConnectedError();
+                //To be implemented
+            }
+            catch (error) {
+                const errMsg = error.message;
+                this.emit('error', new errors_1.WalletAccountChangeError(errMsg));
+                throw error;
+            }
+        });
+    }
+    onNetworkChange() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const wallet = this._wallet;
+                const provider = this._provider || window.fewcha;
+                if (!wallet || !provider)
+                    throw new errors_1.WalletNotConnectedError();
+                //To be implemented
+            }
+            catch (error) {
+                const errMsg = error.message;
+                this.emit('error', new errors_1.WalletNetworkChangeError(errMsg));
                 throw error;
             }
         });

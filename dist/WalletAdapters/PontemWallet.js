@@ -16,7 +16,7 @@ exports.PontemWalletName = 'Pontem';
 class PontemWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
     constructor({ 
     // provider,
-    // network = WalletAdapterNetwork.Mainnet,
+    // network = WalletAdapterNetwork.Testnet,
     timeout = 10000 } = {}) {
         super();
         this.name = exports.PontemWalletName;
@@ -26,7 +26,7 @@ class PontemWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             ? BaseAdapter_1.WalletReadyState.Unsupported
             : BaseAdapter_1.WalletReadyState.NotDetected;
         this._provider = typeof window !== 'undefined' ? window.pontem : undefined;
-        // this._network = network;
+        this._network = undefined;
         this._timeout = timeout;
         this._connecting = false;
         this._wallet = null;
@@ -47,6 +47,13 @@ class PontemWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             publicKey: ((_a = this._wallet) === null || _a === void 0 ? void 0 : _a.publicKey) || null,
             address: ((_b = this._wallet) === null || _b === void 0 ? void 0 : _b.address) || null,
             authKey: ((_c = this._wallet) === null || _c === void 0 ? void 0 : _c.authKey) || null
+        };
+    }
+    get network() {
+        return {
+            name: this._network,
+            api: this._api,
+            chainId: this._chainId
         };
     }
     get connecting() {
@@ -78,14 +85,25 @@ class PontemWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                 if (!response) {
                     throw new errors_1.WalletNotConnectedError('No connect response');
                 }
-                const walletAccount = yield (provider === null || provider === void 0 ? void 0 : provider.account());
-                const publicKey = yield (provider === null || provider === void 0 ? void 0 : provider.publicKey());
+                const walletAccount = response.address;
+                const publicKey = response.publicKey;
                 if (walletAccount) {
                     this._wallet = {
                         address: walletAccount,
                         publicKey,
                         isConnected: true
                     };
+                    try {
+                        const networkInfo = yield (provider === null || provider === void 0 ? void 0 : provider.network());
+                        this._network = networkInfo.name;
+                        this._chainId = networkInfo.chainId;
+                        this._api = networkInfo.api;
+                    }
+                    catch (error) {
+                        const errMsg = error.message;
+                        this.emit('error', new errors_1.WalletGetNetworkError(errMsg));
+                        throw error;
+                    }
                 }
                 this.emit('connect', ((_a = this._wallet) === null || _a === void 0 ? void 0 : _a.address) || '');
             }
@@ -171,56 +189,49 @@ class PontemWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             }
         });
     }
-    onAccountChange(listener) {
+    onAccountChange() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const wallet = this._wallet;
                 const provider = this._provider || window.pontem;
                 if (!wallet || !provider)
                     throw new errors_1.WalletNotConnectedError();
-                yield (provider === null || provider === void 0 ? void 0 : provider.onAccountChange(listener));
+                const handleAccountChange = (newAccount) => __awaiter(this, void 0, void 0, function* () {
+                    if (newAccount === undefined && this.connected) {
+                        yield this.disconnect();
+                        return;
+                    }
+                    const newPublicKey = yield (provider === null || provider === void 0 ? void 0 : provider.publicKey());
+                    this._wallet = Object.assign(Object.assign({}, this._wallet), { address: newAccount, publicKey: newPublicKey });
+                    this.emit('accountChange', newAccount);
+                });
+                yield (provider === null || provider === void 0 ? void 0 : provider.onChangeAccount(handleAccountChange));
             }
             catch (error) {
                 const errMsg = error.message;
-                this.emit('error', new errors_1.WalletAccountError(errMsg));
+                this.emit('error', new errors_1.WalletAccountChangeError(errMsg));
                 throw error;
             }
         });
     }
-    onNetworkChange(listener) {
+    onNetworkChange() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const wallet = this._wallet;
                 const provider = this._provider || window.pontem;
                 if (!wallet || !provider)
                     throw new errors_1.WalletNotConnectedError();
-                yield (provider === null || provider === void 0 ? void 0 : provider.onNetworkChange(listener));
+                const handleNetworkChange = (network) => {
+                    this._network = network.name;
+                    this._api = network.api;
+                    this._chainId = network.chainId;
+                    this.emit('networkChange', this._network);
+                };
+                yield (provider === null || provider === void 0 ? void 0 : provider.onChangeNetwork(handleNetworkChange));
             }
             catch (error) {
                 const errMsg = error.message;
-                this.emit('error', new errors_1.WalletSignMessageError(errMsg));
-                throw error;
-            }
-        });
-    }
-    network() {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const wallet = this._wallet;
-                const provider = this._provider || window.pontem;
-                if (!wallet || !provider)
-                    throw new errors_1.WalletNotConnectedError();
-                const response = yield (provider === null || provider === void 0 ? void 0 : provider.network());
-                if (response) {
-                    return response;
-                }
-                else {
-                    throw new Error('Get network failed');
-                }
-            }
-            catch (error) {
-                const errMsg = error.message;
-                this.emit('error', new errors_1.WalletNetworkError(errMsg));
+                this.emit('error', new errors_1.WalletNetworkChangeError(errMsg));
                 throw error;
             }
         });

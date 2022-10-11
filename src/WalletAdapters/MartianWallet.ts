@@ -1,9 +1,9 @@
-import { MaybeHexString } from 'aptos';
-import { TransactionPayload, HexEncodedBytes, INetworkResponse } from '../types';
+import { MaybeHexString, Types } from 'aptos';
 import {
-  WalletAccountError,
+  WalletAccountChangeError,
   WalletDisconnectionError,
-  WalletNetworkError,
+  WalletGetNetworkError,
+  WalletNetworkChangeError,
   WalletNotConnectedError,
   WalletNotReadyError,
   WalletSignAndSubmitMessageError,
@@ -13,9 +13,11 @@ import {
 import {
   AccountKeys,
   BaseWalletAdapter,
+  NetworkInfo,
   scopePollingDetectionStrategy,
   SignMessagePayload,
   SignMessageResponse,
+  WalletAdapterNetwork,
   WalletName,
   WalletReadyState
 } from './BaseAdapter';
@@ -38,14 +40,14 @@ interface IMartianWallet {
   account(): Promise<MartianAccount>;
   isConnected(): Promise<boolean>;
   generateTransaction(sender: MaybeHexString, payload: any, options?: any): Promise<any>;
-  signAndSubmitTransaction(transaction: TransactionPayload): Promise<HexEncodedBytes>;
-  signTransaction(transaction: TransactionPayload): Promise<Uint8Array>;
+  signAndSubmitTransaction(transaction: Types.TransactionPayload): Promise<Types.HexEncodedBytes>;
+  signTransaction(transaction: Types.TransactionPayload): Promise<Uint8Array>;
   signMessage(message: SignMessagePayload): Promise<SignMessageResponse>;
   disconnect(): Promise<void>;
-  network(): Promise<string>;
-  onAccountChange(listener: (address: string | undefined) => void): Promise<void>;
-  onNetworkChange(listener: (network: string | undefined) => void): Promise<void>;
   getChainId(): Promise<{ chainId: number }>;
+  network(): Promise<WalletAdapterNetwork>;
+  onAccountChange: (listenr: (newAddress: string) => void) => void;
+  onNetworkChange: (listenr: (network: string) => void) => void;
 }
 
 interface MartianWindow extends Window {
@@ -72,7 +74,12 @@ export class MartianWalletAdapter extends BaseWalletAdapter {
 
   protected _provider: IMartianWallet | undefined;
 
-  // protected _network: WalletAdapterNetwork;
+  protected _network: WalletAdapterNetwork;
+
+  protected _chainId: string;
+
+  protected _api: string;
+
   protected _timeout: number;
 
   protected _readyState: WalletReadyState =
@@ -86,13 +93,13 @@ export class MartianWalletAdapter extends BaseWalletAdapter {
 
   constructor({
     // provider,
-    // network = WalletAdapterNetwork.Mainnet,
+    // network = WalletAdapterNetwork.Testnet,
     timeout = 10000
   }: MartianWalletAdapterConfig = {}) {
     super();
 
     this._provider = typeof window !== 'undefined' ? window.martian : undefined;
-    // this._network = network;
+    this._network = undefined;
     this._timeout = timeout;
     this._connecting = false;
     this._wallet = null;
@@ -114,6 +121,14 @@ export class MartianWalletAdapter extends BaseWalletAdapter {
       publicKey: this._wallet?.publicKey || null,
       address: this._wallet?.address || null,
       authKey: this._wallet?.authKey || null
+    };
+  }
+
+  get network(): NetworkInfo {
+    return {
+      name: this._network,
+      api: this._api,
+      chainId: this._chainId
     };
   }
 
@@ -158,6 +173,20 @@ export class MartianWalletAdapter extends BaseWalletAdapter {
           ...walletAccount,
           isConnected: true
         };
+
+        try {
+          const name = await provider?.network();
+          const { chainId } = await provider?.getChainId();
+          const api = null;
+
+          this._network = name;
+          this._chainId = chainId.toString();
+          this._api = api;
+        } catch (error: any) {
+          const errMsg = error.message;
+          this.emit('error', new WalletGetNetworkError(errMsg));
+          throw error;
+        }
       }
       this.emit('connect', this._wallet?.address || '');
     } catch (error: any) {
@@ -184,7 +213,10 @@ export class MartianWalletAdapter extends BaseWalletAdapter {
     this.emit('disconnect');
   }
 
-  async signTransaction(transactionPyld: TransactionPayload, options?: any): Promise<Uint8Array> {
+  async signTransaction(
+    transactionPyld: Types.TransactionPayload,
+    options?: any
+  ): Promise<Uint8Array> {
     try {
       const wallet = this._wallet;
       const provider = this._provider || window.martian;
@@ -204,9 +236,9 @@ export class MartianWalletAdapter extends BaseWalletAdapter {
   }
 
   async signAndSubmitTransaction(
-    transactionPyld: TransactionPayload,
+    transactionPyld: Types.TransactionPayload,
     options?: any
-  ): Promise<{ hash: HexEncodedBytes }> {
+  ): Promise<{ hash: Types.HexEncodedBytes }> {
     try {
       const wallet = this._wallet;
       const provider = this._provider || window.martian;
@@ -246,54 +278,40 @@ export class MartianWalletAdapter extends BaseWalletAdapter {
     }
   }
 
-  async onAccountChange(listener): Promise<void> {
+  async onAccountChange(): Promise<void> {
     try {
       const wallet = this._wallet;
       const provider = this._provider || window.martian;
       if (!wallet || !provider) throw new WalletNotConnectedError();
-      await provider?.onAccountChange(listener);
+      await provider?.onAccountChange((newAccount: string) => {
+        console.log('account Changed >>>', newAccount);
+        this._wallet = {
+          ...this._wallet,
+          address: newAccount
+        };
+        this.emit('accountChange', newAccount);
+      });
     } catch (error: any) {
       const errMsg = error.message;
-      this.emit('error', new WalletAccountError(errMsg));
+      this.emit('error', new WalletAccountChangeError(errMsg));
       throw error;
     }
   }
 
-  async network(): Promise<INetworkResponse> {
+  async onNetworkChange(): Promise<void> {
     try {
       const wallet = this._wallet;
       const provider = this._provider || window.martian;
       if (!wallet || !provider) throw new WalletNotConnectedError();
-      const networkName = await provider?.network();
-      const { chainId } = await provider?.getChainId();
-      if (chainId && networkName) {
-        return { chainId: chainId.toString(), name: networkName };
-      } else {
-        throw new Error('Get network failed');
-      }
-    } catch (error: any) {
-      const errMsg = error.message;
-      this.emit('error', new WalletNetworkError(errMsg));
-      throw error;
-    }
-  }
-
-  async onNetworkChange(listener): Promise<void> {
-    try {
-      const wallet = this._wallet;
-      const provider = this._provider || window.martian;
-      if (!wallet || !provider) throw new WalletNotConnectedError();
-      const collectResponse = async (networkName: string) => {
-        const { chainId } = await provider?.getChainId();
-        if (!(chainId && networkName)) {
-          throw new Error('Network change failed');
-        }
-        return listener({ chainId: chainId.toString(), name: networkName });
+      const handleNetworkChange = async (newNetwork: WalletAdapterNetwork) => {
+        console.log('network Changed >>>', newNetwork);
+        this._network = newNetwork;
+        this.emit('networkChange', this._network);
       };
-      await provider?.onNetworkChange(collectResponse);
+      await provider?.onNetworkChange(handleNetworkChange);
     } catch (error: any) {
       const errMsg = error.message;
-      this.emit('error', new WalletNetworkError(errMsg));
+      this.emit('error', new WalletNetworkChangeError(errMsg));
       throw error;
     }
   }

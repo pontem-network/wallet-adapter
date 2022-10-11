@@ -26,6 +26,15 @@ export declare class WalletDisconnectionError extends WalletError {
 export declare class WalletAccountError extends WalletError {
     name: string;
 }
+export declare class WalletGetNetworkError extends WalletError {
+    name: string;
+}
+export declare class WalletAccountChangeError extends WalletError {
+    name: string;
+}
+export declare class WalletNetworkChangeError extends WalletError {
+    name: string;
+}
 export declare class WalletPublicKeyError extends WalletError {
     name: string;
 }
@@ -54,9 +63,6 @@ export declare class WalletWindowBlockedError extends WalletError {
     name: string;
 }
 export declare class WalletWindowClosedError extends WalletError {
-    name: string;
-}
-export declare class WalletNetworkError extends WalletError {
     name: string;
 }
 //# sourceMappingURL=errors.d.ts.map

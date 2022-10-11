@@ -16,7 +16,7 @@ exports.MartianWalletName = 'Martian';
 class MartianWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
     constructor({ 
     // provider,
-    // network = WalletAdapterNetwork.Mainnet,
+    // network = WalletAdapterNetwork.Testnet,
     timeout = 10000 } = {}) {
         super();
         this.name = exports.MartianWalletName;
@@ -26,7 +26,7 @@ class MartianWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             ? BaseAdapter_1.WalletReadyState.Unsupported
             : BaseAdapter_1.WalletReadyState.NotDetected;
         this._provider = typeof window !== 'undefined' ? window.martian : undefined;
-        // this._network = network;
+        this._network = undefined;
         this._timeout = timeout;
         this._connecting = false;
         this._wallet = null;
@@ -47,6 +47,13 @@ class MartianWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             publicKey: ((_a = this._wallet) === null || _a === void 0 ? void 0 : _a.publicKey) || null,
             address: ((_b = this._wallet) === null || _b === void 0 ? void 0 : _b.address) || null,
             authKey: ((_c = this._wallet) === null || _c === void 0 ? void 0 : _c.authKey) || null
+        };
+    }
+    get network() {
+        return {
+            name: this._network,
+            api: this._api,
+            chainId: this._chainId
         };
     }
     get connecting() {
@@ -81,6 +88,19 @@ class MartianWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                 const walletAccount = yield (provider === null || provider === void 0 ? void 0 : provider.account());
                 if (walletAccount) {
                     this._wallet = Object.assign(Object.assign({}, walletAccount), { isConnected: true });
+                    try {
+                        const name = yield (provider === null || provider === void 0 ? void 0 : provider.network());
+                        const { chainId } = yield (provider === null || provider === void 0 ? void 0 : provider.getChainId());
+                        const api = null;
+                        this._network = name;
+                        this._chainId = chainId.toString();
+                        this._api = api;
+                    }
+                    catch (error) {
+                        const errMsg = error.message;
+                        this.emit('error', new errors_1.WalletGetNetworkError(errMsg));
+                        throw error;
+                    }
                 }
                 this.emit('connect', ((_a = this._wallet) === null || _a === void 0 ? void 0 : _a.address) || '');
             }
@@ -178,64 +198,43 @@ class MartianWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             }
         });
     }
-    onAccountChange(listener) {
+    onAccountChange() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const wallet = this._wallet;
                 const provider = this._provider || window.martian;
                 if (!wallet || !provider)
                     throw new errors_1.WalletNotConnectedError();
-                yield (provider === null || provider === void 0 ? void 0 : provider.onAccountChange(listener));
+                yield (provider === null || provider === void 0 ? void 0 : provider.onAccountChange((newAccount) => {
+                    console.log('account Changed >>>', newAccount);
+                    this._wallet = Object.assign(Object.assign({}, this._wallet), { address: newAccount });
+                    this.emit('accountChange', newAccount);
+                }));
             }
             catch (error) {
                 const errMsg = error.message;
-                this.emit('error', new errors_1.WalletAccountError(errMsg));
+                this.emit('error', new errors_1.WalletAccountChangeError(errMsg));
                 throw error;
             }
         });
     }
-    network() {
+    onNetworkChange() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const wallet = this._wallet;
                 const provider = this._provider || window.martian;
                 if (!wallet || !provider)
                     throw new errors_1.WalletNotConnectedError();
-                const networkName = yield (provider === null || provider === void 0 ? void 0 : provider.network());
-                const { chainId } = yield (provider === null || provider === void 0 ? void 0 : provider.getChainId());
-                if (chainId && networkName) {
-                    return { chainId: chainId.toString(), name: networkName };
-                }
-                else {
-                    throw new Error('Get network failed');
-                }
-            }
-            catch (error) {
-                const errMsg = error.message;
-                this.emit('error', new errors_1.WalletNetworkError(errMsg));
-                throw error;
-            }
-        });
-    }
-    onNetworkChange(listener) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const wallet = this._wallet;
-                const provider = this._provider || window.martian;
-                if (!wallet || !provider)
-                    throw new errors_1.WalletNotConnectedError();
-                const collectResponse = (networkName) => __awaiter(this, void 0, void 0, function* () {
-                    const { chainId } = yield (provider === null || provider === void 0 ? void 0 : provider.getChainId());
-                    if (!(chainId && networkName)) {
-                        throw new Error('Network change failed');
-                    }
-                    return listener({ chainId: chainId.toString(), name: networkName });
+                const handleNetworkChange = (newNetwork) => __awaiter(this, void 0, void 0, function* () {
+                    console.log('network Changed >>>', newNetwork);
+                    this._network = newNetwork;
+                    this.emit('networkChange', this._network);
                 });
-                yield (provider === null || provider === void 0 ? void 0 : provider.onNetworkChange(collectResponse));
+                yield (provider === null || provider === void 0 ? void 0 : provider.onNetworkChange(handleNetworkChange));
             }
             catch (error) {
                 const errMsg = error.message;
-                this.emit('error', new errors_1.WalletNetworkError(errMsg));
+                this.emit('error', new errors_1.WalletNetworkChangeError(errMsg));
                 throw error;
             }
         });

@@ -1,28 +1,31 @@
-import { HexEncodedBytes, INetworkResponse, TransactionPayload } from '../types';
-import { AccountKeys, BaseWalletAdapter, SignMessagePayload, SignMessageResponse, WalletName, WalletReadyState } from './BaseAdapter';
+import { Types } from 'aptos';
+import { AccountKeys, BaseWalletAdapter, NetworkInfo, SignMessagePayload, SignMessageResponse, WalletAdapterNetwork, WalletName, WalletReadyState } from './BaseAdapter';
 interface IApotsErrorResult {
     code: number;
     name: string;
     message: string;
 }
+declare type AddressInfo = {
+    address: string;
+    publicKey: string;
+    authKey?: string;
+};
 interface IAptosWallet {
-    connect: () => Promise<{
-        address: string;
-        publicKey: string;
-    }>;
-    account: () => Promise<string>;
+    connect: () => Promise<AddressInfo>;
+    account: () => Promise<AddressInfo>;
     isConnected: () => Promise<boolean>;
     signAndSubmitTransaction(transaction: any, options?: any): Promise<{
-        hash: HexEncodedBytes;
+        hash: Types.HexEncodedBytes;
     } | IApotsErrorResult>;
     signTransaction(transaction: any, options?: any): Promise<Uint8Array | IApotsErrorResult>;
     signMessage(message: SignMessagePayload): Promise<SignMessageResponse>;
     disconnect(): Promise<void>;
-    network(): Promise<string>;
-    onAccountChange(listener: (address: string | {}) => void): Promise<void>;
-    onNetworkChange(listener: ({ networkName }: {
+    network(): Promise<WalletAdapterNetwork>;
+    requestId: Promise<number>;
+    onAccountChange: (listener: (newAddress: AddressInfo) => void) => void;
+    onNetworkChange: (listener: (network: {
         networkName: string;
-    }) => void): Promise<void>;
+    }) => void) => void;
 }
 export declare const AptosWalletName: WalletName<"Petra">;
 export interface AptosWalletAdapterConfig {
@@ -34,25 +37,28 @@ export declare class AptosWalletAdapter extends BaseWalletAdapter {
     url: string;
     icon: string;
     protected _provider: IAptosWallet | undefined;
+    protected _network: WalletAdapterNetwork;
+    protected _chainId: string;
+    protected _api: string;
     protected _timeout: number;
     protected _readyState: WalletReadyState;
     protected _connecting: boolean;
     protected _wallet: any | null;
     constructor({ timeout }?: AptosWalletAdapterConfig);
     get publicAccount(): AccountKeys;
+    get network(): NetworkInfo;
     get connecting(): boolean;
     get connected(): boolean;
     get readyState(): WalletReadyState;
     connect(): Promise<void>;
     disconnect(): Promise<void>;
-    signTransaction(transaction: TransactionPayload, options?: any): Promise<Uint8Array>;
-    signAndSubmitTransaction(transaction: TransactionPayload, options?: any): Promise<{
-        hash: HexEncodedBytes;
+    signTransaction(transaction: Types.TransactionPayload, options?: any): Promise<Uint8Array>;
+    signAndSubmitTransaction(transaction: Types.TransactionPayload, options?: any): Promise<{
+        hash: Types.HexEncodedBytes;
     }>;
     signMessage(msgPayload: SignMessagePayload): Promise<SignMessageResponse>;
-    onAccountChange(listener: any): Promise<void>;
-    network(): Promise<INetworkResponse>;
-    onNetworkChange(listener: any): Promise<void>;
+    onAccountChange(): Promise<void>;
+    onNetworkChange(): Promise<void>;
 }
 export {};
 //# sourceMappingURL=PetraWallet.d.ts.map

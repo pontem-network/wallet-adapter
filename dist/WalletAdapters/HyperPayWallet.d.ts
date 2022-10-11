@@ -1,6 +1,5 @@
-import { MaybeHexString } from 'aptos';
-import { TransactionPayload, HexEncodedBytes } from '../types';
-import { AccountKeys, BaseWalletAdapter, WalletName, WalletReadyState } from './BaseAdapter';
+import { MaybeHexString, Types } from 'aptos';
+import { AccountKeys, BaseWalletAdapter, NetworkInfo, WalletAdapterNetwork, WalletName, WalletReadyState } from './BaseAdapter';
 interface ConnectHyperPayAccount {
     address: MaybeHexString;
     method: string;
@@ -18,8 +17,8 @@ interface IHyperPayWallet {
     account(): Promise<HyperPayAccount>;
     isConnected(): Promise<boolean>;
     generateTransaction(sender: MaybeHexString, payload: any, options?: any): Promise<any>;
-    signAndSubmitTransaction(transaction: TransactionPayload): Promise<HexEncodedBytes>;
-    signTransaction(transaction: TransactionPayload): Promise<Uint8Array>;
+    signAndSubmitTransaction(transaction: Types.TransactionPayload): Promise<Types.HexEncodedBytes>;
+    signTransaction(transaction: Types.TransactionPayload): Promise<Uint8Array>;
     signMessage(message: string): Promise<{
         signature: string;
     }>;
@@ -35,22 +34,28 @@ export declare class HyperPayWalletAdapter extends BaseWalletAdapter {
     url: string;
     icon: string;
     protected _provider: IHyperPayWallet | undefined;
+    protected _network: WalletAdapterNetwork;
+    protected _chainId: string;
+    protected _api: string;
     protected _timeout: number;
     protected _readyState: WalletReadyState;
     protected _connecting: boolean;
     protected _wallet: HyperPayAccount | null;
     constructor({ timeout }?: HyperPayWalletAdapterConfig);
     get publicAccount(): AccountKeys;
+    get network(): NetworkInfo;
     get connecting(): boolean;
     get connected(): boolean;
     get readyState(): WalletReadyState;
     connect(): Promise<void>;
     disconnect(): Promise<void>;
-    signTransaction(transactionPyld: TransactionPayload, options?: any): Promise<Uint8Array>;
-    signAndSubmitTransaction(transactionPyld: TransactionPayload, options?: any): Promise<{
-        hash: HexEncodedBytes;
+    signTransaction(transactionPyld: Types.TransactionPayload, options?: any): Promise<Uint8Array>;
+    signAndSubmitTransaction(transactionPyld: Types.TransactionPayload, options?: any): Promise<{
+        hash: Types.HexEncodedBytes;
     }>;
     signMessage(message: string): Promise<string>;
+    onAccountChange(): Promise<void>;
+    onNetworkChange(): Promise<void>;
 }
 export {};
 //# sourceMappingURL=HyperPayWallet.d.ts.map

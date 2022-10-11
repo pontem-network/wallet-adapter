@@ -16,7 +16,7 @@ exports.FletchWalletName = 'Fletch';
 class FletchWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
     constructor({ 
     // provider,
-    // network = WalletAdapterNetwork.Mainnet,
+    // network = WalletAdapterNetwork.Testnet,
     timeout = 10000 } = {}) {
         super();
         this.name = exports.FletchWalletName;
@@ -26,7 +26,7 @@ class FletchWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             ? BaseAdapter_1.WalletReadyState.Unsupported
             : BaseAdapter_1.WalletReadyState.NotDetected;
         this._provider = typeof window !== 'undefined' ? window.fletch : undefined;
-        // this._network = network;
+        this._network = undefined;
         this._timeout = timeout;
         this._connecting = false;
         this._wallet = null;
@@ -47,6 +47,13 @@ class FletchWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             publicKey: ((_a = this._wallet) === null || _a === void 0 ? void 0 : _a.publicKey) || null,
             address: ((_b = this._wallet) === null || _b === void 0 ? void 0 : _b.address) || null,
             authKey: ((_c = this._wallet) === null || _c === void 0 ? void 0 : _c.authKey) || null
+        };
+    }
+    get network() {
+        return {
+            name: this._network,
+            api: this._api,
+            chainId: this._chainId
         };
     }
     get connecting() {
@@ -169,6 +176,38 @@ class FletchWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             catch (error) {
                 const errMsg = error.message;
                 this.emit('error', new errors_1.WalletSignMessageError(errMsg));
+                throw error;
+            }
+        });
+    }
+    onAccountChange() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const wallet = this._wallet;
+                const provider = this._provider || window.fletch;
+                if (!wallet || !provider)
+                    throw new errors_1.WalletNotConnectedError();
+                //To be implemented
+            }
+            catch (error) {
+                const errMsg = error.message;
+                this.emit('error', new errors_1.WalletAccountChangeError(errMsg));
+                throw error;
+            }
+        });
+    }
+    onNetworkChange() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const wallet = this._wallet;
+                const provider = this._provider || window.fletch;
+                if (!wallet || !provider)
+                    throw new errors_1.WalletNotConnectedError();
+                //To be implemented
+            }
+            catch (error) {
+                const errMsg = error.message;
+                this.emit('error', new errors_1.WalletNetworkChangeError(errMsg));
                 throw error;
             }
         });

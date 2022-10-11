@@ -1,4 +1,4 @@
-import { TransactionPayload } from '../types';
+import { Types } from 'aptos';
 import { WalletError } from '../WalletProviders';
 import { SignMessagePayload, WalletAdapter, WalletName, WalletReadyState } from '../WalletAdapters';
 interface IUseVueWalletProvider {
@@ -40,16 +40,20 @@ export declare const useWalletProviderStore: import("pinia").StoreDefinition<"wa
                     toUint8Array: () => Uint8Array;
                 };
             };
+            network: {
+                api?: string;
+                chainId?: string;
+                name: import("../WalletAdapters").WalletAdapterNetwork;
+            };
+            onAccountChange: () => Promise<void>;
+            onNetworkChange: () => Promise<void>;
             connect: () => Promise<void>;
             disconnect: () => Promise<void>;
-            signAndSubmitTransaction: (transaction: TransactionPayload, options?: any) => Promise<{
+            signAndSubmitTransaction: (transaction: Types.TransactionPayload, options?: any) => Promise<{
                 hash: string;
             }>;
-            signTransaction: (transaction: TransactionPayload, options?: any) => Promise<Uint8Array>;
+            signTransaction: (transaction: Types.TransactionPayload, options?: any) => Promise<Uint8Array>;
             signMessage: (message: string | Uint8Array | SignMessagePayload) => Promise<string | import("../WalletAdapters").SignMessageResponse>;
-            onAccountChange?: (listener: (address: string) => void) => Promise<void>;
-            onNetworkChange?: (listener: (network: import("../types").INetworkResponse) => void) => Promise<void>;
-            network?: () => Promise<import("../types").INetworkResponse>;
             eventNames: () => (keyof import("../WalletAdapters").WalletAdapterEvents)[];
             listeners: <T extends keyof import("../WalletAdapters").WalletAdapterEvents>(event: T) => ((...args: import("eventemitter3").ArgumentMap<import("../WalletAdapters").WalletAdapterEvents>[Extract<T, keyof import("../WalletAdapters").WalletAdapterEvents>]) => void)[];
             listenerCount: (event: keyof import("../WalletAdapters").WalletAdapterEvents) => number;
@@ -94,16 +98,20 @@ export declare const useWalletProviderStore: import("pinia").StoreDefinition<"wa
                     toUint8Array: () => Uint8Array;
                 };
             };
+            network: {
+                api?: string;
+                chainId?: string;
+                name: import("../WalletAdapters").WalletAdapterNetwork;
+            };
+            onAccountChange: () => Promise<void>;
+            onNetworkChange: () => Promise<void>;
             connect: () => Promise<void>;
             disconnect: () => Promise<void>;
-            signAndSubmitTransaction: (transaction: TransactionPayload, options?: any) => Promise<{
+            signAndSubmitTransaction: (transaction: Types.TransactionPayload, options?: any) => Promise<{
                 hash: string;
             }>;
-            signTransaction: (transaction: TransactionPayload, options?: any) => Promise<Uint8Array>;
+            signTransaction: (transaction: Types.TransactionPayload, options?: any) => Promise<Uint8Array>;
             signMessage: (message: string | Uint8Array | SignMessagePayload) => Promise<string | import("../WalletAdapters").SignMessageResponse>;
-            onAccountChange?: (listener: (address: string) => void) => Promise<void>;
-            onNetworkChange?: (listener: (network: import("../types").INetworkResponse) => void) => Promise<void>;
-            network?: () => Promise<import("../types").INetworkResponse>;
             eventNames: () => (keyof import("../WalletAdapters").WalletAdapterEvents)[];
             listeners: <T extends keyof import("../WalletAdapters").WalletAdapterEvents>(event: T) => ((...args: import("eventemitter3").ArgumentMap<import("../WalletAdapters").WalletAdapterEvents>[Extract<T, keyof import("../WalletAdapters").WalletAdapterEvents>]) => void)[];
             listenerCount: (event: keyof import("../WalletAdapters").WalletAdapterEvents) => number;
@@ -148,12 +156,12 @@ export declare const useWalletProviderStore: import("pinia").StoreDefinition<"wa
     select: (name: WalletName | null) => void;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
-    signAndSubmitTransaction: (transaction: TransactionPayload, option?: any) => Promise<{
+    signAndSubmitTransaction: (transaction: Types.TransactionPayload, option?: any) => Promise<{
         hash: string;
     }>;
-    signTransaction: (transaction: TransactionPayload, option?: any) => Promise<Uint8Array>;
+    signTransaction: (transaction: Types.TransactionPayload, option?: any) => Promise<Uint8Array>;
     signMessage: (msgPayload: string | SignMessagePayload | Uint8Array) => Promise<string | import("../WalletAdapters").SignMessageResponse>;
-}, "wallets" | "autoConnect" | "wallet" | "account" | "connected" | "connecting" | "disconnecting" | "network">>, Pick<{
+}, "wallets" | "autoConnect" | "wallet" | "account" | "connected" | "network" | "connecting" | "disconnecting">>, Pick<{
     init: ({ wallets, onError: onHandleError, localStorageKey: lsKey, autoConnect: autoConnection }: IUseVueWalletProvider) => void;
     wallets: import("vue").Ref<{
         adapter: {
@@ -186,16 +194,20 @@ export declare const useWalletProviderStore: import("pinia").StoreDefinition<"wa
                     toUint8Array: () => Uint8Array;
                 };
             };
+            network: {
+                api?: string;
+                chainId?: string;
+                name: import("../WalletAdapters").WalletAdapterNetwork;
+            };
+            onAccountChange: () => Promise<void>;
+            onNetworkChange: () => Promise<void>;
             connect: () => Promise<void>;
             disconnect: () => Promise<void>;
-            signAndSubmitTransaction: (transaction: TransactionPayload, options?: any) => Promise<{
+            signAndSubmitTransaction: (transaction: Types.TransactionPayload, options?: any) => Promise<{
                 hash: string;
             }>;
-            signTransaction: (transaction: TransactionPayload, options?: any) => Promise<Uint8Array>;
+            signTransaction: (transaction: Types.TransactionPayload, options?: any) => Promise<Uint8Array>;
             signMessage: (message: string | Uint8Array | SignMessagePayload) => Promise<string | import("../WalletAdapters").SignMessageResponse>;
-            onAccountChange?: (listener: (address: string) => void) => Promise<void>;
-            onNetworkChange?: (listener: (network: import("../types").INetworkResponse) => void) => Promise<void>;
-            network?: () => Promise<import("../types").INetworkResponse>;
             eventNames: () => (keyof import("../WalletAdapters").WalletAdapterEvents)[];
             listeners: <T extends keyof import("../WalletAdapters").WalletAdapterEvents>(event: T) => ((...args: import("eventemitter3").ArgumentMap<import("../WalletAdapters").WalletAdapterEvents>[Extract<T, keyof import("../WalletAdapters").WalletAdapterEvents>]) => void)[];
             listenerCount: (event: keyof import("../WalletAdapters").WalletAdapterEvents) => number;
@@ -240,16 +252,20 @@ export declare const useWalletProviderStore: import("pinia").StoreDefinition<"wa
                     toUint8Array: () => Uint8Array;
                 };
             };
+            network: {
+                api?: string;
+                chainId?: string;
+                name: import("../WalletAdapters").WalletAdapterNetwork;
+            };
+            onAccountChange: () => Promise<void>;
+            onNetworkChange: () => Promise<void>;
             connect: () => Promise<void>;
             disconnect: () => Promise<void>;
-            signAndSubmitTransaction: (transaction: TransactionPayload, options?: any) => Promise<{
+            signAndSubmitTransaction: (transaction: Types.TransactionPayload, options?: any) => Promise<{
                 hash: string;
             }>;
-            signTransaction: (transaction: TransactionPayload, options?: any) => Promise<Uint8Array>;
+            signTransaction: (transaction: Types.TransactionPayload, options?: any) => Promise<Uint8Array>;
             signMessage: (message: string | Uint8Array | SignMessagePayload) => Promise<string | import("../WalletAdapters").SignMessageResponse>;
-            onAccountChange?: (listener: (address: string) => void) => Promise<void>;
-            onNetworkChange?: (listener: (network: import("../types").INetworkResponse) => void) => Promise<void>;
-            network?: () => Promise<import("../types").INetworkResponse>;
             eventNames: () => (keyof import("../WalletAdapters").WalletAdapterEvents)[];
             listeners: <T extends keyof import("../WalletAdapters").WalletAdapterEvents>(event: T) => ((...args: import("eventemitter3").ArgumentMap<import("../WalletAdapters").WalletAdapterEvents>[Extract<T, keyof import("../WalletAdapters").WalletAdapterEvents>]) => void)[];
             listenerCount: (event: keyof import("../WalletAdapters").WalletAdapterEvents) => number;
@@ -294,10 +310,10 @@ export declare const useWalletProviderStore: import("pinia").StoreDefinition<"wa
     select: (name: WalletName | null) => void;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
-    signAndSubmitTransaction: (transaction: TransactionPayload, option?: any) => Promise<{
+    signAndSubmitTransaction: (transaction: Types.TransactionPayload, option?: any) => Promise<{
         hash: string;
     }>;
-    signTransaction: (transaction: TransactionPayload, option?: any) => Promise<Uint8Array>;
+    signTransaction: (transaction: Types.TransactionPayload, option?: any) => Promise<Uint8Array>;
     signMessage: (msgPayload: string | SignMessagePayload | Uint8Array) => Promise<string | import("../WalletAdapters").SignMessageResponse>;
 }, "network">, Pick<{
     init: ({ wallets, onError: onHandleError, localStorageKey: lsKey, autoConnect: autoConnection }: IUseVueWalletProvider) => void;
@@ -332,16 +348,20 @@ export declare const useWalletProviderStore: import("pinia").StoreDefinition<"wa
                     toUint8Array: () => Uint8Array;
                 };
             };
+            network: {
+                api?: string;
+                chainId?: string;
+                name: import("../WalletAdapters").WalletAdapterNetwork;
+            };
+            onAccountChange: () => Promise<void>;
+            onNetworkChange: () => Promise<void>;
             connect: () => Promise<void>;
             disconnect: () => Promise<void>;
-            signAndSubmitTransaction: (transaction: TransactionPayload, options?: any) => Promise<{
+            signAndSubmitTransaction: (transaction: Types.TransactionPayload, options?: any) => Promise<{
                 hash: string;
             }>;
-            signTransaction: (transaction: TransactionPayload, options?: any) => Promise<Uint8Array>;
+            signTransaction: (transaction: Types.TransactionPayload, options?: any) => Promise<Uint8Array>;
             signMessage: (message: string | Uint8Array | SignMessagePayload) => Promise<string | import("../WalletAdapters").SignMessageResponse>;
-            onAccountChange?: (listener: (address: string) => void) => Promise<void>;
-            onNetworkChange?: (listener: (network: import("../types").INetworkResponse) => void) => Promise<void>;
-            network?: () => Promise<import("../types").INetworkResponse>;
             eventNames: () => (keyof import("../WalletAdapters").WalletAdapterEvents)[];
             listeners: <T extends keyof import("../WalletAdapters").WalletAdapterEvents>(event: T) => ((...args: import("eventemitter3").ArgumentMap<import("../WalletAdapters").WalletAdapterEvents>[Extract<T, keyof import("../WalletAdapters").WalletAdapterEvents>]) => void)[];
             listenerCount: (event: keyof import("../WalletAdapters").WalletAdapterEvents) => number;
@@ -386,16 +406,20 @@ export declare const useWalletProviderStore: import("pinia").StoreDefinition<"wa
                     toUint8Array: () => Uint8Array;
                 };
             };
+            network: {
+                api?: string;
+                chainId?: string;
+                name: import("../WalletAdapters").WalletAdapterNetwork;
+            };
+            onAccountChange: () => Promise<void>;
+            onNetworkChange: () => Promise<void>;
             connect: () => Promise<void>;
             disconnect: () => Promise<void>;
-            signAndSubmitTransaction: (transaction: TransactionPayload, options?: any) => Promise<{
+            signAndSubmitTransaction: (transaction: Types.TransactionPayload, options?: any) => Promise<{
                 hash: string;
             }>;
-            signTransaction: (transaction: TransactionPayload, options?: any) => Promise<Uint8Array>;
+            signTransaction: (transaction: Types.TransactionPayload, options?: any) => Promise<Uint8Array>;
             signMessage: (message: string | Uint8Array | SignMessagePayload) => Promise<string | import("../WalletAdapters").SignMessageResponse>;
-            onAccountChange?: (listener: (address: string) => void) => Promise<void>;
-            onNetworkChange?: (listener: (network: import("../types").INetworkResponse) => void) => Promise<void>;
-            network?: () => Promise<import("../types").INetworkResponse>;
             eventNames: () => (keyof import("../WalletAdapters").WalletAdapterEvents)[];
             listeners: <T extends keyof import("../WalletAdapters").WalletAdapterEvents>(event: T) => ((...args: import("eventemitter3").ArgumentMap<import("../WalletAdapters").WalletAdapterEvents>[Extract<T, keyof import("../WalletAdapters").WalletAdapterEvents>]) => void)[];
             listenerCount: (event: keyof import("../WalletAdapters").WalletAdapterEvents) => number;
@@ -440,11 +464,11 @@ export declare const useWalletProviderStore: import("pinia").StoreDefinition<"wa
     select: (name: WalletName | null) => void;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
-    signAndSubmitTransaction: (transaction: TransactionPayload, option?: any) => Promise<{
+    signAndSubmitTransaction: (transaction: Types.TransactionPayload, option?: any) => Promise<{
         hash: string;
     }>;
-    signTransaction: (transaction: TransactionPayload, option?: any) => Promise<Uint8Array>;
+    signTransaction: (transaction: Types.TransactionPayload, option?: any) => Promise<Uint8Array>;
     signMessage: (msgPayload: string | SignMessagePayload | Uint8Array) => Promise<string | import("../WalletAdapters").SignMessageResponse>;
-}, "select" | "connect" | "disconnect" | "signTransaction" | "signMessage" | "network" | "init" | "signAndSubmitTransaction">>;
+}, "select" | "network" | "connect" | "disconnect" | "signTransaction" | "signMessage" | "init" | "signAndSubmitTransaction">>;
 export {};
 //# sourceMappingURL=useVueWalletProvider.d.ts.map

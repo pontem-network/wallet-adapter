@@ -20,11 +20,12 @@ const initialState = {
     wallet: null,
     adapter: null,
     account: null,
-    connected: false
+    connected: false,
+    network: null
 };
 const WalletProvider = ({ children, wallets: adapters, autoConnect = false, onError, localStorageKey = 'walletName' }) => {
     const [name, setName] = (0, useLocalStorage_1.useLocalStorage)(localStorageKey, null);
-    const [{ wallet, adapter, account, connected }, setState] = (0, react_1.useState)(initialState);
+    const [{ wallet, adapter, account, connected, network }, setState] = (0, react_1.useState)(initialState);
     const readyState = (adapter === null || adapter === void 0 ? void 0 : adapter.readyState) || BaseAdapter_1.WalletReadyState.Unsupported;
     const [connecting, setConnecting] = (0, react_1.useState)(false);
     const [disconnecting, setDisconnecting] = (0, react_1.useState)(false);
@@ -76,7 +77,8 @@ const WalletProvider = ({ children, wallets: adapters, autoConnect = false, onEr
                 wallet: selectedWallet,
                 adapter: selectedWallet.adapter,
                 connected: selectedWallet.adapter.connected,
-                account: selectedWallet.adapter.publicAccount
+                account: selectedWallet.adapter.publicAccount,
+                network: selectedWallet.adapter.network
             });
         }
         else {
@@ -99,7 +101,25 @@ const WalletProvider = ({ children, wallets: adapters, autoConnect = false, onEr
         if (!adapter)
             return;
         setState((state) => {
-            return Object.assign(Object.assign({}, state), { connected: adapter.connected, account: adapter.publicAccount });
+            return Object.assign(Object.assign({}, state), { connected: adapter.connected, account: adapter.publicAccount, network: adapter.network });
+        });
+    }, [adapter]);
+    // Handle the adapter's network event
+    const handleNetworkChange = (0, react_1.useCallback)(() => {
+        if (!adapter)
+            return;
+        console.log('adapter: handleNetworkChange', adapter.network);
+        setState((state) => {
+            return Object.assign(Object.assign({}, state), { network: adapter.network });
+        });
+    }, [adapter]);
+    // Handle the adapter's account event
+    const handleAccountChange = (0, react_1.useCallback)(() => {
+        if (!adapter)
+            return;
+        console.log('adapter: handleAccountChange', adapter.publicAccount);
+        setState((state) => {
+            return Object.assign(Object.assign({}, state), { account: adapter.publicAccount });
         });
     }, [adapter]);
     // Handle the adapter's disconnect event
@@ -115,19 +135,37 @@ const WalletProvider = ({ children, wallets: adapters, autoConnect = false, onEr
             (onError || console.error)(error);
         return error;
     }, [isUnloading, onError]);
+    // Listen on the adapter's network/account changes
+    (0, react_1.useEffect)(() => {
+        if (adapter && connected) {
+            adapter.onAccountChange();
+            adapter.onNetworkChange();
+        }
+    }, [adapter, connected]);
     // Setup and teardown event listeners when the adapter changes
     (0, react_1.useEffect)(() => {
         if (adapter) {
             adapter.on('connect', handleConnect);
+            adapter.on('networkChange', handleNetworkChange);
+            adapter.on('accountChange', handleAccountChange);
             adapter.on('disconnect', handleDisconnect);
             adapter.on('error', handleError);
             return () => {
                 adapter.off('connect', handleConnect);
+                adapter.off('networkChange', handleNetworkChange);
+                adapter.off('accountChange', handleAccountChange);
                 adapter.off('disconnect', handleDisconnect);
                 adapter.off('error', handleError);
             };
         }
-    }, [adapter, handleConnect, handleDisconnect, handleError]);
+    }, [
+        adapter,
+        handleAccountChange,
+        handleConnect,
+        handleDisconnect,
+        handleError,
+        handleNetworkChange
+    ]);
     // When the adapter changes, disconnect the old one
     (0, react_1.useEffect)(() => {
         return () => {
@@ -257,7 +295,8 @@ const WalletProvider = ({ children, wallets: adapters, autoConnect = false, onEr
             disconnect,
             signAndSubmitTransaction,
             signTransaction,
-            signMessage
+            signMessage,
+            network
         } }, { children: children })));
 };
 exports.WalletProvider = WalletProvider;

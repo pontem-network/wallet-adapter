@@ -1,6 +1,5 @@
-import { MaybeHexString } from 'aptos';
-import { TransactionPayload, HexEncodedBytes, INetworkResponse } from '../types';
-import { AccountKeys, BaseWalletAdapter, SignMessagePayload, SignMessageResponse, WalletName, WalletReadyState } from './BaseAdapter';
+import { MaybeHexString, Types } from 'aptos';
+import { AccountKeys, BaseWalletAdapter, NetworkInfo, SignMessagePayload, SignMessageResponse, WalletAdapterNetwork, WalletName, WalletReadyState } from './BaseAdapter';
 interface ConnectPontemAccount {
     address: MaybeHexString;
     method: string;
@@ -18,22 +17,22 @@ interface IPontemWallet {
     account(): Promise<MaybeHexString>;
     publicKey(): Promise<MaybeHexString>;
     generateTransaction(sender: MaybeHexString, payload: any): Promise<any>;
-    signAndSubmit(transaction: TransactionPayload, options?: any): Promise<{
+    signAndSubmit(transaction: Types.TransactionPayload, options?: any): Promise<{
         success: boolean;
         result: {
-            hash: HexEncodedBytes;
+            hash: Types.HexEncodedBytes;
         };
     }>;
     isConnected(): Promise<boolean>;
-    signTransaction(transaction: TransactionPayload, options?: any): Promise<Uint8Array>;
+    signTransaction(transaction: Types.TransactionPayload, options?: any): Promise<Uint8Array>;
     signMessage(message: SignMessagePayload): Promise<{
         success: boolean;
         result: SignMessageResponse;
     }>;
     disconnect(): Promise<void>;
-    network(): Promise<INetworkResponse>;
-    onAccountChange(listener: (address: string | undefined) => void): Promise<void>;
-    onNetworkChange(listener: (network: INetworkResponse | undefined) => void): Promise<void>;
+    network(): Promise<NetworkInfo>;
+    onChangeAccount(listener: (address: string | undefined) => void): Promise<void>;
+    onChangeNetwork(listener: (network: NetworkInfo) => void): Promise<void>;
 }
 export declare const PontemWalletName: WalletName<"Pontem">;
 export interface PontemWalletAdapterConfig {
@@ -45,25 +44,28 @@ export declare class PontemWalletAdapter extends BaseWalletAdapter {
     url: string;
     icon: string;
     protected _provider: IPontemWallet | undefined;
+    protected _network: WalletAdapterNetwork;
+    protected _chainId: string;
+    protected _api: string;
     protected _timeout: number;
     protected _readyState: WalletReadyState;
     protected _connecting: boolean;
     protected _wallet: PontemAccount | null;
     constructor({ timeout }?: PontemWalletAdapterConfig);
     get publicAccount(): AccountKeys;
+    get network(): NetworkInfo;
     get connecting(): boolean;
     get connected(): boolean;
     get readyState(): WalletReadyState;
     connect(): Promise<void>;
     disconnect(): Promise<void>;
-    signTransaction(transactionPyld: TransactionPayload, options?: any): Promise<Uint8Array>;
-    signAndSubmitTransaction(transactionPyld: TransactionPayload, options?: any): Promise<{
-        hash: HexEncodedBytes;
+    signTransaction(transactionPyld: Types.TransactionPayload, options?: any): Promise<Uint8Array>;
+    signAndSubmitTransaction(transactionPyld: Types.TransactionPayload, options?: any): Promise<{
+        hash: Types.HexEncodedBytes;
     }>;
     signMessage(messagePayload: SignMessagePayload): Promise<SignMessageResponse>;
-    onAccountChange(listener: any): Promise<void>;
-    onNetworkChange(listener: any): Promise<void>;
-    network(): Promise<INetworkResponse>;
+    onAccountChange(): Promise<void>;
+    onNetworkChange(): Promise<void>;
 }
 export {};
 //# sourceMappingURL=PontemWallet.d.ts.map

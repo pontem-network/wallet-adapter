@@ -20,7 +20,7 @@ exports.AptosSnapName = 'Snap';
 class AptosSnapAdapter extends BaseAdapter_1.BaseWalletAdapter {
     constructor({ 
     // provider,
-    network, timeout = 10000 } = { network: 'devnet' }) {
+    network, timeout = 10000 } = { network: BaseAdapter_1.WalletAdapterNetwork.Devnet }) {
         super();
         this.name = exports.AptosSnapName;
         this.url = 'https://chrome.google.com/webstore/detail/metamask-flask-developmen/ljfoeinjpaedjfecbmggjgodbgkmjkjk';
@@ -30,7 +30,7 @@ class AptosSnapAdapter extends BaseAdapter_1.BaseWalletAdapter {
             : BaseAdapter_1.WalletReadyState.NotDetected;
         //@ts-ignore
         this._provider = new aptossnap_adapter_1.default({ network }, 'npm:@keystonehq/aptossnap');
-        // this._network = network;
+        this._network = network;
         this._timeout = timeout;
         this._connecting = false;
         this._wallet = null;
@@ -50,6 +50,13 @@ class AptosSnapAdapter extends BaseAdapter_1.BaseWalletAdapter {
             publicKey: ((_a = this._wallet) === null || _a === void 0 ? void 0 : _a.publicKey) || null,
             address: ((_b = this._wallet) === null || _b === void 0 ? void 0 : _b.address) || null,
             authKey: ((_c = this._wallet) === null || _c === void 0 ? void 0 : _c.authKey) || null
+        };
+    }
+    get network() {
+        return {
+            name: this._network,
+            api: this._api,
+            chainId: this._chainId
         };
     }
     get connecting() {
@@ -176,6 +183,38 @@ class AptosSnapAdapter extends BaseAdapter_1.BaseWalletAdapter {
             catch (error) {
                 const errMsg = error.message;
                 this.emit('error', new errors_1.WalletSignMessageError(errMsg));
+                throw error;
+            }
+        });
+    }
+    onAccountChange() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const wallet = this._wallet;
+                const provider = this._provider;
+                if (!wallet || !provider)
+                    throw new errors_1.WalletNotConnectedError();
+                //To be implemented
+            }
+            catch (error) {
+                const errMsg = error.message;
+                this.emit('error', new errors_1.WalletAccountChangeError(errMsg));
+                throw error;
+            }
+        });
+    }
+    onNetworkChange() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const wallet = this._wallet;
+                const provider = this._provider;
+                if (!wallet || !provider)
+                    throw new errors_1.WalletNotConnectedError();
+                //To be implemented
+            }
+            catch (error) {
+                const errMsg = error.message;
+                this.emit('error', new errors_1.WalletNetworkChangeError(errMsg));
                 throw error;
             }
         });

@@ -21,7 +21,7 @@ __exportStar(require("./HippoWallet"), exports);
 __exportStar(require("./MartianWallet"), exports);
 __exportStar(require("./FewchaWallet"), exports);
 __exportStar(require("./PontemWallet"), exports);
-// export * from './NightlyWallet';
+__exportStar(require("./NightlyWallet"), exports);
 __exportStar(require("./RiseWallet"), exports);
 __exportStar(require("./SpikaWallet"), exports);
 __exportStar(require("./HyperPayWallet"), exports);
