@@ -197,8 +197,9 @@ class PontemWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                 if (!wallet || !provider)
                     throw new errors_1.WalletNotConnectedError();
                 const handleAccountChange = (newAccount) => __awaiter(this, void 0, void 0, function* () {
-                    if (newAccount === undefined && this.connected) {
-                        yield this.disconnect();
+                    if (newAccount === undefined) {
+                        if (this.connected)
+                            yield this.disconnect();
                         return;
                     }
                     const newPublicKey = yield (provider === null || provider === void 0 ? void 0 : provider.publicKey());
