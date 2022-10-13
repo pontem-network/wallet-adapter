@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { defineStore } from 'pinia';
 import { Types } from 'aptos';
 
@@ -11,6 +11,7 @@ import {
 } from '../WalletProviders';
 import {
   AccountKeys,
+  NetworkInfo,
   SignMessagePayload,
   WalletAdapter,
   WalletName,
@@ -62,7 +63,7 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
   const connecting = ref<boolean>(false);
   const disconnecting = ref<boolean>(false);
   const readyState = ref<WalletReadyState>(WalletReadyState.Unsupported);
-  const walletNetwork = ref<any>(null);
+  const walletNetwork = ref<NetworkInfo | null>(null);
 
   const wallets = ref<Wallet[]>([]);
 

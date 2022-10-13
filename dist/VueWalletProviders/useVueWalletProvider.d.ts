@@ -152,7 +152,11 @@ export declare const useWalletProviderStore: import("pinia").StoreDefinition<"wa
     connecting: import("vue").Ref<boolean>;
     disconnecting: import("vue").Ref<boolean>;
     autoConnect: import("vue").Ref<boolean>;
-    network: any;
+    network: import("vue").Ref<{
+        api?: string;
+        chainId?: string;
+        name: import("../WalletAdapters").WalletAdapterNetwork;
+    }>;
     select: (name: WalletName | null) => void;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
@@ -306,7 +310,11 @@ export declare const useWalletProviderStore: import("pinia").StoreDefinition<"wa
     connecting: import("vue").Ref<boolean>;
     disconnecting: import("vue").Ref<boolean>;
     autoConnect: import("vue").Ref<boolean>;
-    network: any;
+    network: import("vue").Ref<{
+        api?: string;
+        chainId?: string;
+        name: import("../WalletAdapters").WalletAdapterNetwork;
+    }>;
     select: (name: WalletName | null) => void;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
@@ -315,7 +323,7 @@ export declare const useWalletProviderStore: import("pinia").StoreDefinition<"wa
     }>;
     signTransaction: (transaction: Types.TransactionPayload, option?: any) => Promise<Uint8Array>;
     signMessage: (msgPayload: string | SignMessagePayload | Uint8Array) => Promise<string | import("../WalletAdapters").SignMessageResponse>;
-}, "network">, Pick<{
+}, never>, Pick<{
     init: ({ wallets, onError: onHandleError, localStorageKey: lsKey, autoConnect: autoConnection }: IUseVueWalletProvider) => void;
     wallets: import("vue").Ref<{
         adapter: {
@@ -460,7 +468,11 @@ export declare const useWalletProviderStore: import("pinia").StoreDefinition<"wa
     connecting: import("vue").Ref<boolean>;
     disconnecting: import("vue").Ref<boolean>;
     autoConnect: import("vue").Ref<boolean>;
-    network: any;
+    network: import("vue").Ref<{
+        api?: string;
+        chainId?: string;
+        name: import("../WalletAdapters").WalletAdapterNetwork;
+    }>;
     select: (name: WalletName | null) => void;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
@@ -469,6 +481,6 @@ export declare const useWalletProviderStore: import("pinia").StoreDefinition<"wa
     }>;
     signTransaction: (transaction: Types.TransactionPayload, option?: any) => Promise<Uint8Array>;
     signMessage: (msgPayload: string | SignMessagePayload | Uint8Array) => Promise<string | import("../WalletAdapters").SignMessageResponse>;
-}, "select" | "network" | "connect" | "disconnect" | "signTransaction" | "signMessage" | "init" | "signAndSubmitTransaction">>;
+}, "select" | "connect" | "disconnect" | "signTransaction" | "signMessage" | "init" | "signAndSubmitTransaction">>;
 export {};
 //# sourceMappingURL=useVueWalletProvider.d.ts.map
