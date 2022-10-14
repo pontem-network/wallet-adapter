@@ -1,6 +1,6 @@
 {
   "name": "@pontem/aptos-wallet-adapter",
-  "version": "0.4.9",
+  "version": "0.5.0",
   "main": "dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [

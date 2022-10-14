@@ -67,7 +67,6 @@ class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
         return this._readyState;
     }
     connect() {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (this.connected || this.connecting)
@@ -77,10 +76,6 @@ class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                     throw new errors_1.WalletNotReadyError();
                 this._connecting = true;
                 const provider = this._provider || window.aptos;
-                const isConnected = yield ((_a = this._provider) === null || _a === void 0 ? void 0 : _a.isConnected());
-                if (isConnected === true) {
-                    yield (provider === null || provider === void 0 ? void 0 : provider.disconnect());
-                }
                 const response = yield (provider === null || provider === void 0 ? void 0 : provider.connect());
                 this._wallet = {
                     address: response === null || response === void 0 ? void 0 : response.address,
@@ -200,10 +195,14 @@ class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                 if (!wallet || !provider)
                     throw new errors_1.WalletNotConnectedError();
                 const handleAccountChange = (newAccount) => __awaiter(this, void 0, void 0, function* () {
-                    var _a, _b, _c;
-                    console.log('account Changed >>>', newAccount);
-                    // Petra extension currently didn't return the new Account
-                    this._wallet = Object.assign(Object.assign({}, this._wallet), { publicKey: newAccount.publicKey || ((_a = this._wallet) === null || _a === void 0 ? void 0 : _a.publicKey), authKey: newAccount.authKey || ((_b = this._wallet) === null || _b === void 0 ? void 0 : _b.authKey), address: newAccount.address || ((_c = this._wallet) === null || _c === void 0 ? void 0 : _c.address) });
+                    var _a, _b, _c, _d, _e, _f;
+                    if (newAccount === null || newAccount === void 0 ? void 0 : newAccount.publicKey) {
+                        this._wallet = Object.assign(Object.assign({}, this._wallet), { publicKey: newAccount.publicKey || ((_a = this._wallet) === null || _a === void 0 ? void 0 : _a.publicKey), authKey: newAccount.authKey || ((_b = this._wallet) === null || _b === void 0 ? void 0 : _b.authKey), address: newAccount.address || ((_c = this._wallet) === null || _c === void 0 ? void 0 : _c.address) });
+                    }
+                    else {
+                        const response = yield (provider === null || provider === void 0 ? void 0 : provider.connect());
+                        this._wallet = Object.assign(Object.assign({}, this._wallet), { authKey: (response === null || response === void 0 ? void 0 : response.authKey) || ((_d = this._wallet) === null || _d === void 0 ? void 0 : _d.authKey), address: (response === null || response === void 0 ? void 0 : response.address) || ((_e = this._wallet) === null || _e === void 0 ? void 0 : _e.address), publicKey: (response === null || response === void 0 ? void 0 : response.publicKey) || ((_f = this._wallet) === null || _f === void 0 ? void 0 : _f.publicKey) });
+                    }
                     this.emit('accountChange', newAccount.publicKey);
                 });
                 yield (provider === null || provider === void 0 ? void 0 : provider.onAccountChange(handleAccountChange));
@@ -223,7 +222,6 @@ class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                 if (!wallet || !provider)
                     throw new errors_1.WalletNotConnectedError();
                 const handleNetworkChange = (newNetwork) => __awaiter(this, void 0, void 0, function* () {
-                    console.log('network Changed >>>', newNetwork);
                     this._network = newNetwork.networkName;
                     this.emit('networkChange', this._network);
                 });
