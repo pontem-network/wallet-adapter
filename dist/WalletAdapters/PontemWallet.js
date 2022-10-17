@@ -199,14 +199,14 @@ class PontemWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                 const handleAccountChange = (newAccount) => __awaiter(this, void 0, void 0, function* () {
                     if (newAccount === undefined) {
                         if (this.connected)
-                            yield this.disconnect();
+                            yield (provider === null || provider === void 0 ? void 0 : provider.disconnect());
                         return;
                     }
                     const newPublicKey = yield (provider === null || provider === void 0 ? void 0 : provider.publicKey());
                     this._wallet = Object.assign(Object.assign({}, this._wallet), { address: newAccount, publicKey: newPublicKey });
                     this.emit('accountChange', newAccount);
                 });
-                yield (provider === null || provider === void 0 ? void 0 : provider.onChangeAccount(handleAccountChange));
+                yield (provider === null || provider === void 0 ? void 0 : provider.onAccountChange(handleAccountChange));
             }
             catch (error) {
                 const errMsg = error.message;
@@ -228,7 +228,7 @@ class PontemWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                     this._chainId = network.chainId;
                     this.emit('networkChange', this._network);
                 };
-                yield (provider === null || provider === void 0 ? void 0 : provider.onChangeNetwork(handleNetworkChange));
+                yield (provider === null || provider === void 0 ? void 0 : provider.onNetworkChange(handleNetworkChange));
             }
             catch (error) {
                 const errMsg = error.message;

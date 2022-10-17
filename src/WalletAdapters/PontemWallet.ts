@@ -57,8 +57,8 @@ interface IPontemWallet {
   }>;
   disconnect(): Promise<void>;
   network(): Promise<NetworkInfo>;
-  onChangeAccount(listener: (address: string | undefined) => void): Promise<void>;
-  onChangeNetwork(listener: (network: NetworkInfo) => void): Promise<void>;
+  onAccountChange(listener: (address: string | undefined) => void): Promise<void>;
+  onNetworkChange(listener: (network: NetworkInfo) => void): Promise<void>;
 }
 
 interface PontemWindow extends Window {
@@ -287,7 +287,7 @@ export class PontemWalletAdapter extends BaseWalletAdapter {
       if (!wallet || !provider) throw new WalletNotConnectedError();
       const handleAccountChange = async (newAccount: string | undefined) => {
         if (newAccount === undefined) {
-          if (this.connected) await this.disconnect();
+          if (this.connected) await provider?.disconnect();
           return;
         }
         const newPublicKey = await provider?.publicKey();
@@ -298,7 +298,7 @@ export class PontemWalletAdapter extends BaseWalletAdapter {
         };
         this.emit('accountChange', newAccount);
       };
-      await provider?.onChangeAccount(handleAccountChange);
+      await provider?.onAccountChange(handleAccountChange);
     } catch (error: any) {
       const errMsg = error.message;
       this.emit('error', new WalletAccountChangeError(errMsg));
@@ -311,14 +311,13 @@ export class PontemWalletAdapter extends BaseWalletAdapter {
       const wallet = this._wallet;
       const provider = this._provider || window.pontem;
       if (!wallet || !provider) throw new WalletNotConnectedError();
-
       const handleNetworkChange = (network: NetworkInfo) => {
         this._network = network.name;
         this._api = network.api;
         this._chainId = network.chainId;
         this.emit('networkChange', this._network);
       };
-      await provider?.onChangeNetwork(handleNetworkChange);
+      await provider?.onNetworkChange(handleNetworkChange);
     } catch (error: any) {
       const errMsg = error.message;
       this.emit('error', new WalletNetworkChangeError(errMsg));

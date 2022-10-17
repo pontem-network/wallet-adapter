@@ -1,6 +1,6 @@
 # aptos-wallet-adapter
 
-React `WalletProvider` supporting loads of aptos wallets.
+React and Vue `WalletProvider` supporting loads of aptos wallets.
 
 Supports:
 
@@ -14,33 +14,25 @@ Supports:
 - [Rise Wallet](https://rise)
 - [Fletch wallet](http://fletchwallet.io/)
 
-Working on (PR welcome):
-
-- [Nightly wallet](https://chrome.google.com/webstore/detail/nightly/injggoambcadlfkkjcgdfbejanmgfgfm/related?hl=en&authuser=0)
-
 # Installation
 
 with `yarn`
 
 ```
-yarn add @manahippo/aptos-wallet-adapter
+yarn add @pontem/aptos-wallet-adapter
 ```
 
 with `npm`
 
 ```
-npm install @manahippo/aptos-wallet-adapter
+npm install @pontem/aptos-wallet-adapter
 ```
 
-# Examples
+# Example for React
 
 ## **Frontend Integration**
 
 Here's an example of how we integrate the adapter into [hippo's frontend](https://github.com/hippospace/hippo-frontend/blob/main/src/Providers.tsx):
-
-### **Wallet integration**
-
-Wallets source code [here](https://github.com/hippospace/aptos-wallet-adapter/tree/main/src/WalletAdatpers).
 
 # Use React Provider
 
@@ -57,7 +49,7 @@ import {
   SpikaWalletAdapter,
   RiseWalletAdapter,
   FletchWalletAdapter
-} from '@manahippo/aptos-wallet-adapter';
+} from '@pontem/aptos-wallet-adapter';
 
 const wallets = [
   new PontemWalletAdapter(),
@@ -90,7 +82,7 @@ export default App;
 # Web3 Hook
 
 ```typescript
-import { useWallet } from '@manahippo/aptos-wallet-adapter';
+import { useWallet } from '@pontem/aptos-wallet-adapter';
 
 const { connected, account, network, ...rest } = useWallet();
 
@@ -99,22 +91,30 @@ const { connected, account, network, ...rest } = useWallet();
 
   wallets: Wallet[]; - Array of wallets
   wallet: Wallet | null; - Selected wallet
-  account: AccountKeys | null; - Wallet info: address, 
-  network: NetworkInfo - { name, chainId, api }
-  publicKey, authKey
+  account: AccountKeys | null; { address, publicKey, authkey } - Wallet info: address, 
+  network: NetworkInfo - { name, chainId?, api? }
   connected: boolean; - check the website is connected yet
   connect(walletName: string): Promise<void>; - trigger connect popup
   disconnect(): Promise<void>; - trigger disconnect action
   signAndSubmitTransaction(
     transaction: TransactionPayload
+    options?: any
   ): Promise<PendingTransaction>; - function to sign and submit the transaction to chain
+  signTransaction(
+    transactionPayload,
+    options?: any
+  ): Promise<Uint8Array> - signs transaction and returns Uint8Array
+  signMessage(
+    signMessagePayload,
+    options?: any
+  ): Promise<signMessageResponse> - signs message and returns signMessageResponse
 */
 ```
 
 # Connect & Disconnect
 
 ```typescript
-import { AptosWalletName, useWallet } from "@manahippo/aptos-wallet-adapter"
+import { AptosWalletName, useWallet } from "@pontem/aptos-wallet-adapter";
 
 ...
 
@@ -149,6 +149,130 @@ if (!connected) {
     </button>
   );
 }
+```
+
+# Example for Vue
+
+# Installation
+
+Vue app required 2 packages as dependency:
+Because Vue and Pinia is optional dependency inside @pontem/aptos-wallet-adapter
+
+```json
+{
+  "dependencies": {
+    "vue": "3.2.40",
+    "pinia": "2.0.22",
+    ...
+  }
+}
+```
+
+# Use Vue Wallet Provider
+
+```typescript
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+
+import App from "./App.vue";
+import { useWalletProviderStore } from "@pontem/aptos-wallet-adapter";
+
+const app = createApp(App);
+
+/**
+ * To solve issue with call pinia before pinia mounted we should use store here with pinia passed to store
+ * The order of next 3 lines matters. 
+ * */
+const pinia = createPinia();
+app.use(pinia);
+const _store = useWalletProviderStore(pinia);
+
+app.mount("#app");
+```
+
+# Init store inside Vue Component
+
+You can use both [composition](https://vuejs.org/guide/extras/composition-api-faq.html) and [options](https://vuejs.org/guide/typescript/options-api.html) API
+
+```typescript
+<script lang="ts">
+import { storeToRefs } from "pinia";
+import { computed, ref, defineComponent } from "vue";
+import {
+  AptosWalletAdapter,
+  MartianWalletAdapter,
+  PontemWalletAdapter,
+  useWalletProviderStore,
+  WalletName,
+} from "@pontem/aptos-wallet-adapter";
+
+const defaultWalletName = "Pontem" as WalletName<"Pontem">;
+const handleError = (error) => {
+  /* some fancy notify error callback or just console.log handle */
+}
+
+export default defineComponent({
+  name: "App",
+  setup: function () {
+    const store = useWalletProviderStore();
+    const walletAdapters = [new PontemWalletAdapter(), new MartianWalletAdapter(), new AptosWalletAdapter()];
+
+    const {
+      select,
+      connect,
+      disconnect,
+      signAndSubmitTransaction,
+      signTransaction,
+      signMessage,
+      init,
+    } = store; // this is methods:
+    /**
+     * select(walletName): selects one of walletAdapters(sets walletName to localstorage with localStorageKey)
+     *                      If autoConnect = true - also will connect wallet automatically. 
+     * connect(): connect selected wallet (first need to call select and pass walletName).
+     * disconnect(): disconnects currently connected wallet.
+     * signAndSubmitTransaction(transactionPayload, options?): Signs and submits transaction and returns hash 
+     * signTransaction(transactionPayload, options?): signs transaction and returns Uint8Array
+     * signMessage(signMessagePayload, options?): signs message and returns signMessageResponse
+     * init({
+     *    wallets: array of wallet adapters.
+     *    localStorageKey?: string which used as key to store selected walletName at localstorage. 
+     *    onError?: callback function to get an error message
+     *    autoConnect?: boolean, if true enables autoConnection to keep wallet connected even if page reloaded. 
+     *  }): inits store with parameters
+     * */
+    
+    // All refs from store should be extracted with storeToRefs to prevent breaking reactivity:
+    const { 
+      wallets,
+      wallet,
+      connected, 
+      connecting, 
+      account,
+      network, 
+      disconnecting,
+      autoConnect
+    } = storeToRefs(store);
+
+    /**
+     * wallets: Wallet[]; - array of walletAdapters, passed on init.
+     * wallet: Wallet | null; - currently selected wallet. 
+     * connected: boolean; - true if selected wallet was succesfully connected 
+     * connecting: boolean; - true while wallet is connecting
+     * account: AccountKeys | null; { address, publicKey, authKey } - current account data
+     * network: NetworkInfo | null; { name, chainId?, api? } current network data (if selected walletAdapter able to pass network)
+     * disconnecting: boolean; - true while wallet is disconnecting
+     * autoConnect: boolean; - autoConnect value, passed on init.
+     */
+
+    // Init store should be called once, this method accepts object with next parameters:
+    init({
+      wallets: walletAdapters,
+      localStorageKey: "VueAdapterLocalStorage",
+      onError: handleError, 
+      autoConnect: true,
+    });
+</script>
 ```
 
 # Hippo Wallet Client

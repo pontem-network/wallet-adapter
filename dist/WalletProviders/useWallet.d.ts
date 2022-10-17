@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { Types } from 'aptos';
 import { AccountKeys, NetworkInfo, SignMessagePayload, SignMessageResponse, WalletAdapter, WalletName, WalletReadyState } from '../WalletAdapters/BaseAdapter';
 export interface Wallet {
@@ -23,6 +22,6 @@ export interface WalletContextState {
     signTransaction(transaction: Types.TransactionPayload, options?: any): Promise<Uint8Array>;
     signMessage(message: string | SignMessagePayload | Uint8Array): Promise<SignMessageResponse | string>;
 }
-export declare const WalletContext: import("react").Context<WalletContextState>;
+export declare const WalletContext: any;
 export declare function useWallet(): WalletContextState;
 //# sourceMappingURL=useWallet.d.ts.map
