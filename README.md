@@ -1,4 +1,4 @@
-# pontem-wallet-adapter
+# aptos-wallet-adapter
 
 React and Vue `WalletProvider` supporting loads of aptos wallets.
 
@@ -161,8 +161,8 @@ Because Vue and Pinia is optional dependency inside @pontem/aptos-wallet-adapter
 ```json
 {
   "dependencies": {
-    "vue": "^3.X.X",
-    "pinia": "^2.X.X",
+    "vue": "3.2.40",
+    "pinia": "2.0.22",
     ...
   }
 }
