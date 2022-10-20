@@ -287,7 +287,7 @@ export class PontemWalletAdapter extends BaseWalletAdapter {
       if (!wallet || !provider) throw new WalletNotConnectedError();
       const handleAccountChange = async (newAccount: string | undefined) => {
         if (newAccount === undefined) {
-          if (this.connected) await provider?.disconnect();
+          if (this.connected) await this.disconnect();
           return;
         }
         const newPublicKey = await provider?.publicKey();

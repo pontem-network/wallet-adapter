@@ -9,19 +9,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AptosWalletAdapter = exports.AptosWalletName = void 0;
+exports.TokenPocketWalletAdapter = exports.TokenPocketWalletName = void 0;
 const errors_1 = require("../WalletProviders/errors");
 const BaseAdapter_1 = require("./BaseAdapter");
-exports.AptosWalletName = 'Petra';
-class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
+exports.TokenPocketWalletName = 'TokenPocket';
+class TokenPocketWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
     constructor({ 
     // provider,
-    // network = WalletAdapterNetwork.Testnet,
+    // network = WalletAdapterNetwork.Mainnet,
     timeout = 10000 } = {}) {
         super();
-        this.name = exports.AptosWalletName;
-        this.url = 'https://chrome.google.com/webstore/detail/petra-aptos-wallet/ejjladinnckdgjemekebdpeokbikhfci';
-        this.icon = 'https://raw.githubusercontent.com/hippospace/aptos-wallet-adapter/main/logos/petra.png';
+        this.name = exports.TokenPocketWalletName;
+        this.url = 'https://tokenpocket.pro';
+        this.icon = 'https://tp-statics.tokenpocket.pro/logo/tokenpocket.png';
         this._readyState = typeof window === 'undefined' || typeof document === 'undefined'
             ? BaseAdapter_1.WalletReadyState.Unsupported
             : BaseAdapter_1.WalletReadyState.NotDetected;
@@ -32,7 +32,8 @@ class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
         this._wallet = null;
         if (typeof window !== 'undefined' && this._readyState !== BaseAdapter_1.WalletReadyState.Unsupported) {
             (0, BaseAdapter_1.scopePollingDetectionStrategy)(() => {
-                if (window.aptos) {
+                var _a;
+                if (window.aptos && ((_a = window.aptos) === null || _a === void 0 ? void 0 : _a.isTokenPocket)) {
                     this._readyState = BaseAdapter_1.WalletReadyState.Installed;
                     this.emit('readyStateChange', this._readyState);
                     return true;
@@ -76,17 +77,24 @@ class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                     throw new errors_1.WalletNotReadyError();
                 this._connecting = true;
                 const provider = this._provider || window.aptos;
+                const isConnected = yield (provider === null || provider === void 0 ? void 0 : provider.isConnected());
+                if (isConnected) {
+                    yield (provider === null || provider === void 0 ? void 0 : provider.disconnect());
+                }
                 const response = yield (provider === null || provider === void 0 ? void 0 : provider.connect());
+                if (!response) {
+                    throw new errors_1.WalletNotConnectedError('No connect response');
+                }
                 this._wallet = {
                     address: response === null || response === void 0 ? void 0 : response.address,
                     publicKey: response === null || response === void 0 ? void 0 : response.publicKey,
                     isConnected: true
                 };
                 try {
-                    const name = yield (provider === null || provider === void 0 ? void 0 : provider.network());
-                    const chainId = null;
-                    const api = null;
-                    this._network = name;
+                    const network = yield (provider === null || provider === void 0 ? void 0 : provider.network());
+                    const chainId = yield (provider === null || provider === void 0 ? void 0 : provider.getChainId());
+                    const api = yield (provider === null || provider === void 0 ? void 0 : provider.getNodeUrl());
+                    this._network = network;
                     this._chainId = chainId;
                     this._api = api;
                 }
@@ -95,10 +103,10 @@ class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                     this.emit('error', new errors_1.WalletGetNetworkError(errMsg));
                     throw error;
                 }
-                this.emit('connect', this._wallet.publicKey);
+                this.emit('connect', this._wallet.address);
             }
             catch (error) {
-                this.emit('error', error);
+                this.emit('error', new Error(error));
                 throw error;
             }
             finally {
@@ -130,14 +138,13 @@ class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                 if (!wallet || !provider)
                     throw new errors_1.WalletNotConnectedError();
                 const response = yield provider.signTransaction(transaction, options);
-                if (response.code) {
-                    throw new Error(response.message);
+                if (!response) {
+                    throw new Error('No response');
                 }
                 return response;
             }
             catch (error) {
-                const errMsg = error.message;
-                this.emit('error', new errors_1.WalletSignTransactionError(errMsg));
+                this.emit('error', new errors_1.WalletSignTransactionError(error));
                 throw error;
             }
         });
@@ -150,14 +157,13 @@ class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                 if (!wallet || !provider)
                     throw new errors_1.WalletNotConnectedError();
                 const response = yield provider.signAndSubmitTransaction(transaction, options);
-                if (response.code) {
-                    throw new Error(response.message);
+                if (!response) {
+                    throw new Error('No response');
                 }
                 return response;
             }
             catch (error) {
-                const errMsg = error.message;
-                this.emit('error', new errors_1.WalletSignAndSubmitMessageError(errMsg));
+                this.emit('error', new errors_1.WalletSignAndSubmitMessageError(error));
                 throw error;
             }
         });
@@ -187,53 +193,14 @@ class AptosWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
             }
         });
     }
-    onAccountChange() {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const wallet = this._wallet;
-                const provider = this._provider || window.aptos;
-                if (!wallet || !provider)
-                    throw new errors_1.WalletNotConnectedError();
-                const handleAccountChange = (newAccount) => __awaiter(this, void 0, void 0, function* () {
-                    var _a, _b, _c, _d, _e, _f;
-                    if (newAccount === null || newAccount === void 0 ? void 0 : newAccount.publicKey) {
-                        this._wallet = Object.assign(Object.assign({}, this._wallet), { publicKey: newAccount.publicKey || ((_a = this._wallet) === null || _a === void 0 ? void 0 : _a.publicKey), authKey: newAccount.authKey || ((_b = this._wallet) === null || _b === void 0 ? void 0 : _b.authKey), address: newAccount.address || ((_c = this._wallet) === null || _c === void 0 ? void 0 : _c.address) });
-                    }
-                    else {
-                        const response = yield (provider === null || provider === void 0 ? void 0 : provider.connect());
-                        this._wallet = Object.assign(Object.assign({}, this._wallet), { authKey: (response === null || response === void 0 ? void 0 : response.authKey) || ((_d = this._wallet) === null || _d === void 0 ? void 0 : _d.authKey), address: (response === null || response === void 0 ? void 0 : response.address) || ((_e = this._wallet) === null || _e === void 0 ? void 0 : _e.address), publicKey: (response === null || response === void 0 ? void 0 : response.publicKey) || ((_f = this._wallet) === null || _f === void 0 ? void 0 : _f.publicKey) });
-                    }
-                    this.emit('accountChange', newAccount.publicKey);
-                });
-                yield (provider === null || provider === void 0 ? void 0 : provider.onAccountChange(handleAccountChange));
-            }
-            catch (error) {
-                const errMsg = error.message;
-                this.emit('error', new errors_1.WalletAccountChangeError(errMsg));
-                throw error;
-            }
-        });
-    }
     onNetworkChange() {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const wallet = this._wallet;
-                const provider = this._provider || window.aptos;
-                if (!wallet || !provider)
-                    throw new errors_1.WalletNotConnectedError();
-                const handleNetworkChange = (newNetwork) => __awaiter(this, void 0, void 0, function* () {
-                    this._network = newNetwork.networkName;
-                    this.emit('networkChange', this._network);
-                });
-                yield (provider === null || provider === void 0 ? void 0 : provider.onNetworkChange(handleNetworkChange));
-            }
-            catch (error) {
-                const errMsg = error.message;
-                this.emit('error', new errors_1.WalletNetworkChangeError(errMsg));
-                throw error;
-            }
+        });
+    }
+    onAccountChange() {
+        return __awaiter(this, void 0, void 0, function* () {
         });
     }
 }
-exports.AptosWalletAdapter = AptosWalletAdapter;
-//# sourceMappingURL=PetraWallet.js.map
+exports.TokenPocketWalletAdapter = TokenPocketWalletAdapter;
+//# sourceMappingURL=TokenPocketWallet.js.map

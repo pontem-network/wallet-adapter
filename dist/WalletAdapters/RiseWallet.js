@@ -20,7 +20,7 @@ class RiseWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
     timeout = 10000 } = {}) {
         super();
         this.name = exports.RiseWalletName;
-        this.url = 'https://chrome.google.com/webstore/detail/hbbgbephgojikajhfbomhlmmollphcad';
+        this.url = 'https://risewallet.io';
         this.icon = 'https://static.risewallet.io/logo.png';
         this._readyState = typeof window === 'undefined' || typeof document === 'undefined'
             ? BaseAdapter_1.WalletReadyState.Unsupported

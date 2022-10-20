@@ -205,10 +205,12 @@ class MartianWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                 const provider = this._provider || window.martian;
                 if (!wallet || !provider)
                     throw new errors_1.WalletNotConnectedError();
-                yield (provider === null || provider === void 0 ? void 0 : provider.onAccountChange((newAccount) => {
-                    this._wallet = Object.assign(Object.assign({}, this._wallet), { address: newAccount });
+                const handleChangeAccount = (newAccount) => __awaiter(this, void 0, void 0, function* () {
+                    const { publicKey } = yield (provider === null || provider === void 0 ? void 0 : provider.account());
+                    this._wallet = Object.assign(Object.assign({}, this._wallet), { address: newAccount, publicKey });
                     this.emit('accountChange', newAccount);
-                }));
+                });
+                yield (provider === null || provider === void 0 ? void 0 : provider.onAccountChange(handleChangeAccount));
             }
             catch (error) {
                 const errMsg = error.message;

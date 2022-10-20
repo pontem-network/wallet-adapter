@@ -1,4 +1,4 @@
 export declare const useSSR: () => {
-    isClient: any;
+    isClient: boolean;
 };
 //# sourceMappingURL=useSSR.d.ts.map

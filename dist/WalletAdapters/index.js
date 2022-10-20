@@ -27,4 +27,8 @@ __exportStar(require("./SpikaWallet"), exports);
 __exportStar(require("./HyperPayWallet"), exports);
 __exportStar(require("./FletchWallet"), exports);
 __exportStar(require("./AptosSnap"), exports);
+__exportStar(require("./BitkeepWallet"), exports);
+__exportStar(require("./TokenPocketWallet"), exports);
+__exportStar(require("./ONTOWallet"), exports);
+__exportStar(require("./BloctoWallet"), exports);
 //# sourceMappingURL=index.js.map

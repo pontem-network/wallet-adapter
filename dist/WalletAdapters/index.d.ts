@@ -11,4 +11,8 @@ export * from './SpikaWallet';
 export * from './HyperPayWallet';
 export * from './FletchWallet';
 export * from './AptosSnap';
+export * from './BitkeepWallet';
+export * from './TokenPocketWallet';
+export * from './ONTOWallet';
+export * from './BloctoWallet';
 //# sourceMappingURL=index.d.ts.map
