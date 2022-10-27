@@ -1,6 +1,6 @@
 {
   "name": "@pontem/aptos-wallet-adapter",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Wallet adapter with supporting Vue and React",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -8,6 +8,11 @@
     "src",
     "dist"
   ],
+  "keywords": [
+    "pontem",
+    "wallet adapter"
+  ],
+  "author": "Dmitry Kuksenko <dmitriy.kuksenko@pontem.network>",
   "repository": "https://github.com/pontem-network/wallet-adapter",
   "bugs": {
     "url": "https://github.com/pontem-network/wallet-adapter/issues"
@@ -16,6 +21,7 @@
   "scripts": {
     "build": "rm -rf dist; tsc -p tsconfig.json"
   },
+  "license": "MIT",
   "devDependencies": {
     "eslint-config-airbnb-typescript": "17.0.0",
     "eslint-config-prettier": "8.5.0",
