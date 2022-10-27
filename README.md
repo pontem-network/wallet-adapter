@@ -1,6 +1,7 @@
 # aptos-wallet-adapter
 
 React and Vue `WalletProvider` supporting loads of aptos wallets.
+Forked and featured with wallet provider based on Vue.js/Pinia.js from [Hippo Wallet Adapter](https://github.com/hippospace/aptos-wallet-adapter).
 
 Supports:
 
