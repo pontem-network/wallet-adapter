@@ -1,14 +1,7 @@
-import { ref, watch } from 'vue';
-import { defineStore } from 'pinia';
 import { Types } from 'aptos';
+import { defineStore } from 'pinia';
+import { ref, watch } from 'vue';
 
-import {
-  Wallet,
-  WalletError,
-  WalletNotConnectedError,
-  WalletNotReadyError,
-  WalletNotSelectedError
-} from '../WalletProviders';
 import {
   AccountKeys,
   NetworkInfo,
@@ -17,6 +10,13 @@ import {
   WalletName,
   WalletReadyState
 } from '../WalletAdapters';
+import {
+  Wallet,
+  WalletError,
+  WalletNotConnectedError,
+  WalletNotReadyError,
+  WalletNotSelectedError
+} from '../WalletProviders';
 
 interface IUseVueWalletProvider {
   wallets: WalletAdapter[];
@@ -218,7 +218,7 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
 
     disconnecting.value = true;
     try {
-      await adapter.value.disconnect();
+      await adapter.value?.disconnect();
     } catch (error: any) {
       // Clear the selected wallet
       setWalletName(null);

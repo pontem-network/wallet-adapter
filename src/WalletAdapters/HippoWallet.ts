@@ -123,7 +123,7 @@ export class HippoWalletAdapter extends BaseWalletAdapter {
       } else if (e.data.method === 'fail') {
         this.emit('error', new WalletSignAndSubmitMessageError(e.data.error));
       } else if (e.data.method === 'disconnected') {
-        this.disconnect();
+        this?.disconnect();
       }
     }
   };
@@ -260,6 +260,6 @@ export class HippoWalletAdapter extends BaseWalletAdapter {
   }
 
   private _beforeUnload = (): void => {
-    void this.disconnect();
+    void this?.disconnect();
   };
 }
