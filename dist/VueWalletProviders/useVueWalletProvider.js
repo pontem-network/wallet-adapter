@@ -10,10 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useWalletProviderStore = void 0;
-const vue_1 = require("vue");
 const pinia_1 = require("pinia");
-const WalletProviders_1 = require("../WalletProviders");
+const vue_1 = require("vue");
 const WalletAdapters_1 = require("../WalletAdapters");
+const WalletProviders_1 = require("../WalletProviders");
 const getWalletNameFromLocalStorage = (key) => {
     try {
         const value = localStorage.getItem(key);
@@ -187,6 +187,7 @@ exports.useWalletProviderStore = (0, pinia_1.defineStore)('walletProviderStore',
     }
     // function to disconnect adapter and clear localstorage
     function disconnect() {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             if (disconnecting.value)
                 return;
@@ -196,7 +197,7 @@ exports.useWalletProviderStore = (0, pinia_1.defineStore)('walletProviderStore',
             }
             disconnecting.value = true;
             try {
-                yield adapter.value.disconnect();
+                yield ((_a = adapter.value) === null || _a === void 0 ? void 0 : _a.disconnect());
             }
             catch (error) {
                 // Clear the selected wallet

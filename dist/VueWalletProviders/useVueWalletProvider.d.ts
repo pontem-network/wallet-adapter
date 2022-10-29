@@ -1,6 +1,6 @@
 import { Types } from 'aptos';
-import { WalletError } from '../WalletProviders';
 import { SignMessagePayload, WalletAdapter, WalletName, WalletReadyState } from '../WalletAdapters';
+import { WalletError } from '../WalletProviders';
 interface IUseVueWalletProvider {
     wallets: WalletAdapter[];
     onError?: (error: WalletError) => void;

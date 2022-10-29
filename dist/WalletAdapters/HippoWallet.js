@@ -43,12 +43,12 @@ class HippoWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                     this.emit('error', new errors_1.WalletSignAndSubmitMessageError(e.data.error));
                 }
                 else if (e.data.method === 'disconnected') {
-                    this.disconnect();
+                    this === null || this === void 0 ? void 0 : this.disconnect();
                 }
             }
         };
         this._beforeUnload = () => {
-            void this.disconnect();
+            void (this === null || this === void 0 ? void 0 : this.disconnect());
         };
         this._provider = aptosConstants_1.WEBWALLET_URL || 'https://hippo-wallet-test.web.app';
         this._network = undefined;

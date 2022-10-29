@@ -228,6 +228,10 @@ class MartianWalletAdapter extends BaseAdapter_1.BaseWalletAdapter {
                     throw new errors_1.WalletNotConnectedError();
                 const handleNetworkChange = (newNetwork) => __awaiter(this, void 0, void 0, function* () {
                     this._network = newNetwork;
+                    const { chainId } = yield (provider === null || provider === void 0 ? void 0 : provider.getChainId());
+                    if (chainId) {
+                        this._chainId = chainId.toString();
+                    }
                     this.emit('networkChange', this._network);
                 });
                 yield (provider === null || provider === void 0 ? void 0 : provider.onNetworkChange(handleNetworkChange));
