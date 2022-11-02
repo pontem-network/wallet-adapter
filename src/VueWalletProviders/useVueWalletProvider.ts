@@ -155,7 +155,8 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
 
   // Handle the adapter's error event, and local errors
   function handleError(error: WalletError) {
-    (onError.value || console.error)(error);
+    if (onError.value)
+    (onError.value || console.log)(error);
     return error;
   }
 
