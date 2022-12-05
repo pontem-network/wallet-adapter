@@ -311,11 +311,17 @@ export class PontemWalletAdapter extends BaseWalletAdapter {
       const wallet = this._wallet;
       const provider = this._provider || window.pontem;
       if (!wallet || !provider) throw new WalletNotConnectedError();
-      const handleNetworkChange = (network: NetworkInfo) => {
-        this._network = network.name;
-        this._api = network.api;
-        this._chainId = network.chainId;
-        this.emit('networkChange', this._network);
+      const handleNetworkChange = (network: NetworkInfo | undefined) => {
+        // https://sentry.pontem.network/organizations/sentry/issues/724/?_allp=1&query=is%3Aunresolved+http.url%3Ahttp%3A%2F%2Flocalhost%3A8080%2F&statsPeriod=7d
+        // we also have a bug on the wallet side APT-926
+        try {
+          this._network = network.name;
+          this._api = network.api;
+          this._chainId = network.chainId;
+          this.emit('networkChange', this._network);
+        } catch (err: any) {
+          this.emit('error', new WalletNetworkChangeError(err.message));
+        }
       };
       await provider?.onNetworkChange(handleNetworkChange);
     } catch (error: any) {
