@@ -103,10 +103,10 @@ export class PontemWalletAdapter extends BaseWalletAdapter {
   protected _wallet: PontemAccount | null;
 
   constructor({
-    // provider,
-    // network = WalletAdapterNetwork.Testnet,
-    timeout = 10000
-  }: PontemWalletAdapterConfig = {}) {
+                // provider,
+                // network = WalletAdapterNetwork.Testnet,
+                timeout = 10000
+              }: PontemWalletAdapterConfig = {}) {
     super();
 
     this._provider = typeof window !== 'undefined' ? window.pontem : undefined;
