@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/pontem-network/wallet-adapter#readme",
   "scripts": {
-    "build": "rm -rf dist; tsc -p tsconfig.json; rm -rf node_modules"
+    "build": "rm -rf dist; tsc -p tsconfig.json"
   },
   "license": "MIT",
   "peerDependencies": {
