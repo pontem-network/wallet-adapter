@@ -183,7 +183,8 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
     if (
       !(
         selectedWallet.adapter.readyState === WalletReadyState.Installed ||
-        selectedWallet.adapter.readyState === WalletReadyState.Loadable
+        selectedWallet.adapter.readyState === WalletReadyState.Loadable ||
+        selectedWallet.adapter.name !== 'Msafe'
       )
     ) {
       // Clear the selected wallet
