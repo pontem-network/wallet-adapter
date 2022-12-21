@@ -203,6 +203,7 @@ export class BloctoWalletAdapter extends BaseWalletAdapter {
     try {
       try {
         const provider = this._provider;
+        // @ts-ignore
         const response = await provider?.signAndSubmitTransaction(transaction, options);
         if (response) {
           return { hash: response.hash };
