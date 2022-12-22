@@ -7,10 +7,10 @@
   resolved "https://registry.npmjs.org/@babel/parser/-/parser-7.19.3.tgz"
   integrity sha512-pJ9xOlNWHiy9+FuFP09DEAFbAn4JskgRsVcc169w2xRBC3FRGuQEwjeIMMND9L2zc0iEhO/tGv4Zq+km+hxNpQ==
 
-"@blocto/sdk@0.3.0-beta.9":
-  version "0.3.0-beta.9"
-  resolved "https://registry.yarnpkg.com/@blocto/sdk/-/sdk-0.3.0-beta.9.tgz#87c74d36252afcabb64322c131b2eff3ee50bcf6"
-  integrity sha512-B+7s/oYdS+TWhDkEc/06nmS+4T0VsVy5T2V3yOUxS2iPuqdNcwRNJtC40JzB+OmrxJrST6zOE8VbW9ved95VOg==
+"@blocto/sdk@^0.3.1":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@blocto/sdk/-/sdk-0.3.3.tgz#c247ea022bda977a21846d342876b8efc950e033"
+  integrity sha512-PHiti69t0e8VW4/vD2RB8p66MUtwaL/CUWY8j2HWBNJ/KuoKmazDATrymXd6Mgn0hVI/rl7K5EUrD8xDPSPPoA==
   dependencies:
     bs58 "^4.0.1"
     buffer "^6.0.3"
@@ -61,6 +61,11 @@
   version "1.1.2"
   resolved "https://registry.npmjs.org/@noble/hashes/-/hashes-1.1.2.tgz"
   integrity sha512-KYRCASVTv6aeUi1tsF8/vpyR7zpfs3FUzy2Jqm+MU+LmUKhQ0y2FpfwqkCcxSg2ua4GALJd8k2R76WxwZGbQpA==
+
+"@openblockhq/dappsdk@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@openblockhq/dappsdk/-/dappsdk-5.0.2.tgz#a6ae200735495c1b7989f29924482776ecca1a78"
+  integrity sha512-ULicLfCZPekIjHcEQ/A0Zf1nor7JbcR/vRmmhPhoMhllTQ3ij+wDm1Noiaei821Z2VCC98uatJAbWsyJtjeeFg==
 
 "@pedrouid/environment@^1.0.1":
   version "1.0.1"
@@ -746,6 +751,13 @@ js-sha3@0.8.0, js-sha3@^0.8.0:
   resolved "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
 
+json-rpc-protocol@^0.13.2:
+  version "0.13.2"
+  resolved "https://registry.yarnpkg.com/json-rpc-protocol/-/json-rpc-protocol-0.13.2.tgz#0338cdf9a12b457af256682f003f451031af0814"
+  integrity sha512-2InSi+c7wGESmvYcEVS0clctpJCodV7gLqLN1BIIPNK07wokXIwhOL8RQWU4O7oX5adChn6HJGtIU6JaUQ1P/A==
+  dependencies:
+    make-error "^1.3.0"
+
 "jsx-ast-utils@^2.4.1 || ^3.0.0":
   version "3.3.3"
   resolved "https://registry.npmjs.org/jsx-ast-utils/-/jsx-ast-utils-3.3.3.tgz"
@@ -773,6 +785,11 @@ magic-string@^0.25.7:
   dependencies:
     sourcemap-codec "^1.4.8"
 
+make-error@^1.3.0:
+  version "1.3.6"
+  resolved "https://registry.yarnpkg.com/make-error/-/make-error-1.3.6.tgz#2eb2e37ea9b67c4891f684a1394799af484cf7a2"
+  integrity sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==
+
 mime-db@1.52.0:
   version "1.52.0"
   resolved "https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz"
@@ -791,6 +808,14 @@ minimatch@^3.1.2:
   integrity sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==
   dependencies:
     brace-expansion "^1.1.7"
+
+msafe-wallet@^1.1.9:
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/msafe-wallet/-/msafe-wallet-1.1.9.tgz#594a0f47624125e4e5756f6547a6e13a620664b2"
+  integrity sha512-jTLcDkR5xe+PMeIPhxSbnHRiWWLh4Fct4x2OUPjYIouRDg7wAUQkxP1WsArkTJufPFD4RTtrjxw17J71ar+5IQ==
+  dependencies:
+    buffer "^6.0.3"
+    json-rpc-protocol "^0.13.2"
 
 nanoid@^3.3.4:
   version "3.3.4"

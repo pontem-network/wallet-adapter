@@ -1,76 +1,66 @@
-import { MaybeHexString, Types } from 'aptos';
+import { Types } from 'aptos';
 import {
   WalletAccountChangeError,
   WalletDisconnectionError,
   WalletNetworkChangeError,
   WalletNotConnectedError,
   WalletNotReadyError,
-  WalletGetNetworkError,
   WalletSignAndSubmitMessageError,
   WalletSignMessageError,
   WalletSignTransactionError
 } from '../WalletProviders/errors';
+
 import {
   AccountKeys,
   BaseWalletAdapter,
   NetworkInfo,
   scopePollingDetectionStrategy,
+  SignMessagePayload,
+  SignMessageResponse,
   WalletAdapterNetwork,
   WalletName,
-  SignMessageResponse,
-  SignMessagePayload,
   WalletReadyState
 } from './BaseAdapter';
 
-interface ConnectHyperPayAccount {
-  address: MaybeHexString;
-  method: string;
-  publicKey: MaybeHexString;
-  status: number;
-}
+type AddressInfo = { address: string; publicKey: string; authKey?: string };
 
-interface HyperPayAccount {
-  address: MaybeHexString;
-  publicKey: MaybeHexString;
-  authKey: MaybeHexString;
-  isConnected: boolean;
-}
-interface IHyperPayWallet {
-  connect: () => Promise<ConnectHyperPayAccount>;
-  account(): Promise<HyperPayAccount>;
-  isConnected(): Promise<boolean>;
-  getChainId(): Promise<{ chainId: number }>;
-  network(): Promise<WalletAdapterNetwork>;
-  generateTransaction(sender: MaybeHexString, payload: any, options?: any): Promise<any>;
-  signAndSubmitTransaction(transaction: Types.TransactionPayload): Promise<Types.HexEncodedBytes>;
-  signTransaction(transaction: Types.TransactionPayload): Promise<Uint8Array>;
+interface IOpenBlockWallet {
+  connect: () => Promise<AddressInfo>;
+  account: () => Promise<AddressInfo>;
+  network: () => Promise<NetworkInfo>;
+  isConnected: () => Promise<boolean>;
+  signAndSubmitTransaction(transaction: any): Promise<{ hash: string }>;
+  signTransaction(payload: any): Promise<string>;
   signMessage(message: SignMessagePayload): Promise<SignMessageResponse>;
   disconnect(): Promise<void>;
+  onAccountChange: (listener: (newAddress: AddressInfo) => void) => void;
+  onNetworkChange: (listener: (network: NetworkInfo) => void) => void;
 }
 
-interface HyperPayWindow extends Window {
-  hyperpay?: IHyperPayWallet;
+interface OpenBlockWindow extends Window {
+  openblock?: {
+    aptos?: IOpenBlockWallet;
+  };
 }
 
-declare const window: HyperPayWindow;
+declare const window: OpenBlockWindow;
 
-export const HyperPayWalletName = 'HyperPay' as WalletName<'HyperPay'>;
+export const OpenBlockWalletName = 'OpenBlock' as WalletName<'OpenBlock'>;
 
-export interface HyperPayWalletAdapterConfig {
-  provider?: IHyperPayWallet;
+export interface OpenBlockWalletAdapterConfig {
+  provider?: IOpenBlockWallet;
   // network?: WalletAdapterNetwork;
   timeout?: number;
 }
 
-export class HyperPayWalletAdapter extends BaseWalletAdapter {
-  name = HyperPayWalletName;
+export class OpenBlockWalletAdapter extends BaseWalletAdapter {
+  name = OpenBlockWalletName;
 
-  url = 'https://www.hyperpay.io/';
+  url = 'https://openblock.com/';
 
-  icon =
-    'https://hyperpay.oss-ap-southeast-1.aliyuncs.com/heperpay/1666601839.png';
+  icon = 'https://obstatic.243096.com/download/dapp/sdk/images/logo_blue.svg';
 
-  protected _provider: IHyperPayWallet | undefined;
+  protected _provider: IOpenBlockWallet;
 
   protected _network: WalletAdapterNetwork;
 
@@ -87,24 +77,25 @@ export class HyperPayWalletAdapter extends BaseWalletAdapter {
 
   protected _connecting: boolean;
 
-  protected _wallet: HyperPayAccount | null;
+  protected _wallet: any | null;
 
   constructor({
     // provider,
-    // network = WalletAdapterNetwork.Mainnet,
+    // network = WalletAdapterNetwork.Testnet,
     timeout = 10000
-  }: HyperPayWalletAdapterConfig = {}) {
+  }: OpenBlockWalletAdapterConfig = {}) {
     super();
 
-    this._provider = typeof window !== 'undefined' ? window.hyperpay : undefined;
-    // this._network = network;
+    this._provider = typeof window !== 'undefined' ? window.openblock?.aptos : undefined;
+    this._network = undefined;
     this._timeout = timeout;
     this._connecting = false;
     this._wallet = null;
 
     if (typeof window !== 'undefined' && this._readyState !== WalletReadyState.Unsupported) {
+      require('@openblockhq/dappsdk');
       scopePollingDetectionStrategy(() => {
-        if (window.hyperpay) {
+        if (window.openblock?.aptos) {
           this._readyState = WalletReadyState.Installed;
           this.emit('readyStateChange', this._readyState);
           return true;
@@ -154,41 +145,30 @@ export class HyperPayWalletAdapter extends BaseWalletAdapter {
         throw new WalletNotReadyError();
       this._connecting = true;
 
-      const provider = this._provider || window.hyperpay;
-      const isConnected = await provider?.isConnected();
-      if (isConnected) {
+      const provider = this._provider || window?.openblock?.aptos;
+      const isConnected = await this._provider?.isConnected();
+      if (isConnected === true) {
         await provider?.disconnect();
       }
+
       const response = await provider?.connect();
-
-      if (!response) {
-        throw new WalletNotConnectedError('No connect response');
-      }
-
-      const walletAccount = await provider?.account();
-      if (walletAccount) {
+      if (response.address) {
         this._wallet = {
-          ...walletAccount,
+          address: response?.address,
+          publicKey: response?.publicKey,
           isConnected: true
         };
+        const network = await provider?.network();
 
-        try {
-          const name = await provider?.network();
-          const { chainId } = await provider?.getChainId();
-          const api = null;
-
-          this._network = name;
-          this._chainId = chainId.toString();
-          this._api = api;
-        } catch (error: any) {
-          const errMsg = error.message;
-          this.emit('error', new WalletGetNetworkError(errMsg));
-          throw error;
-        }
+        this._network = network.name;
+        this._chainId = network.chainId;
+        this._api = network.api;
+      } else {
+        throw new Error('failed to connect');
       }
-      this.emit('connect', this._wallet?.address || '');
+      this.emit('connect', this._wallet.publicKey);
     } catch (error: any) {
-      this.emit('error', new Error(error));
+      this.emit('error', error);
       throw error;
     } finally {
       this._connecting = false;
@@ -197,7 +177,7 @@ export class HyperPayWalletAdapter extends BaseWalletAdapter {
 
   async disconnect(): Promise<void> {
     const wallet = this._wallet;
-    const provider = this._provider || window.hyperpay;
+    const provider = this._provider || window?.openblock?.aptos;
     if (wallet) {
       this._wallet = null;
 
@@ -211,46 +191,39 @@ export class HyperPayWalletAdapter extends BaseWalletAdapter {
     this.emit('disconnect');
   }
 
-  async signTransaction(
-    transactionPyld: Types.TransactionPayload,
-    options?: any
-  ): Promise<Uint8Array> {
+  async signTransaction(transaction: Types.TransactionPayload): Promise<Uint8Array> {
     try {
       const wallet = this._wallet;
-      const provider = this._provider || window.hyperpay;
+      const provider = this._provider || window?.openblock?.aptos;
       if (!wallet || !provider) throw new WalletNotConnectedError();
-      const tx = await provider.generateTransaction(wallet.address || '', transactionPyld, options);
-      if (!tx) throw new Error('Cannot generate transaction');
-      const response = await provider?.signTransaction(tx);
 
-      if (!response) {
-        throw new Error('No response');
+      const response = await provider.signTransaction(transaction);
+      if (response) {
+        return new TextEncoder().encode(response);
       }
-      return response;
+      throw new Error('failed to SignTransaction');
     } catch (error: any) {
-      this.emit('error', new WalletSignTransactionError(error));
+      const errMsg = error.message;
+      this.emit('error', new WalletSignTransactionError(errMsg));
       throw error;
     }
   }
 
   async signAndSubmitTransaction(
-    transactionPyld: Types.TransactionPayload,
-    options?: any
+    transaction: Types.TransactionPayload
   ): Promise<{ hash: Types.HexEncodedBytes }> {
     try {
       const wallet = this._wallet;
-      const provider = this._provider || window.hyperpay;
+      const provider = this._provider || window?.openblock?.aptos;
       if (!wallet || !provider) throw new WalletNotConnectedError();
-      const tx = await provider.generateTransaction(wallet.address || '', transactionPyld, options);
-      if (!tx) throw new Error('Cannot generate transaction');
-      const response = await provider?.signAndSubmitTransaction(tx);
-
-      if (!response) {
-        throw new Error('No response');
+      const response = await provider.signAndSubmitTransaction(transaction);
+      if (response) {
+        return response;
       }
-      return { hash: response };
+      throw new Error('Failed to SignAndSubmitTransaction');
     } catch (error: any) {
-      this.emit('error', new WalletSignAndSubmitMessageError(error));
+      const errMsg = error.message;
+      this.emit('error', new WalletSignAndSubmitMessageError(errMsg));
       throw error;
     }
   }
@@ -258,17 +231,18 @@ export class HyperPayWalletAdapter extends BaseWalletAdapter {
   async signMessage(msgPayload: SignMessagePayload): Promise<SignMessageResponse> {
     try {
       const wallet = this._wallet;
-      const provider = this._provider || window.hyperpay;
+      const provider = this._provider || window?.openblock?.aptos;
       if (!wallet || !provider) throw new WalletNotConnectedError();
       if (typeof msgPayload !== 'object' || !msgPayload.nonce) {
         throw new WalletSignMessageError('Invalid signMessage Payload');
       }
+
       const response = await provider?.signMessage(msgPayload);
       if (response) {
         return response;
-      } else {
-        throw new Error('Sign Message failed');
       }
+
+      throw new Error('Failed to signMessage');
     } catch (error: any) {
       const errMsg = error.message;
       this.emit('error', new WalletSignMessageError(errMsg));
@@ -279,9 +253,18 @@ export class HyperPayWalletAdapter extends BaseWalletAdapter {
   async onAccountChange(): Promise<void> {
     try {
       const wallet = this._wallet;
-      const provider = this._provider || window.hyperpay;
+      const provider = this._provider || window?.openblock?.aptos;
       if (!wallet || !provider) throw new WalletNotConnectedError();
-      //To be implemented
+      const handleAccountChange = async (newAccount: AddressInfo) => {
+        this._wallet = {
+          ...this._wallet,
+          publicKey: newAccount.publicKey || this._wallet?.publicKey,
+          authKey: newAccount.authKey || this._wallet?.authKey,
+          address: newAccount.address || this._wallet?.address
+        };
+        this.emit('accountChange', newAccount.publicKey);
+      };
+      provider?.onAccountChange(handleAccountChange);
     } catch (error: any) {
       const errMsg = error.message;
       this.emit('error', new WalletAccountChangeError(errMsg));
@@ -292,9 +275,15 @@ export class HyperPayWalletAdapter extends BaseWalletAdapter {
   async onNetworkChange(): Promise<void> {
     try {
       const wallet = this._wallet;
-      const provider = this._provider || window.hyperpay;
+      const provider = this._provider || window?.openblock?.aptos;
       if (!wallet || !provider) throw new WalletNotConnectedError();
-      //To be implemented
+      const handleNetworkChange = async (newNetwork: NetworkInfo) => {
+        this._network = newNetwork.name;
+        this._api = newNetwork.api;
+        this._chainId = newNetwork.chainId;
+        this.emit('networkChange', this._network);
+      };
+      provider?.onNetworkChange(handleNetworkChange);
     } catch (error: any) {
       const errMsg = error.message;
       this.emit('error', new WalletNetworkChangeError(errMsg));

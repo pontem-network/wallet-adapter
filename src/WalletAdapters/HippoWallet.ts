@@ -260,6 +260,6 @@ export class HippoWalletAdapter extends BaseWalletAdapter {
   }
 
   private _beforeUnload = (): void => {
-    void this?.disconnect();
+    void this.disconnect();
   };
 }
