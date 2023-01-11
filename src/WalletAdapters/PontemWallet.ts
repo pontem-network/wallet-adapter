@@ -287,6 +287,8 @@ export class PontemWalletAdapter extends BaseWalletAdapter {
           await this.disconnect();
           return;
         }
+        this._wallet.publicKey = await provider.publicKey();
+        this._wallet.address = newAccount;
         this.emit('accountChange', newAccount);
       };
       await provider?.onAccountChange(handleAccountChange);
