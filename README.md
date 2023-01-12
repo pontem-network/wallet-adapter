@@ -1,3 +1,4 @@
+<a name="readme-top"></a>
 # aptos-wallet-adapter
 
 React and Vue `WalletProvider` supporting loads of aptos wallets.
@@ -5,15 +6,22 @@ Forked and featured with wallet provider based on Vue.js/Pinia.js from [Hippo Wa
 
 Supports:
 
-- [Pontem Wallet](https://pontem.network/pontem-wallet)
-- [Aptos official wallet](https://github.com/aptos-labs/aptos-core/releases/tag/wallet-v0.1.1)
+- [Petra wallet](https://petra.app/)
 - [Martian wallet](https://martianwallet.xyz/)
 - [Fewcha wallet](https://fewcha.app/)
-- [Hippo wallet](https://github.com/hippospace/hippo-wallet)
-- [Hippo web wallet](https://hippo-wallet-test.web.app/)
+- [Pontem Wallet](https://pontem.network/pontem-wallet)
 - [Spika wallet](https://spika.app)
-- [Rise Wallet](https://rise)
+- [Rise wallet](https://risewallet.io/)
+- [HyperPay wallet](https://www.hyperpay.io/)
 - [Fletch wallet](http://fletchwallet.io/)
+- [Spika web wallet](https://spika.app)
+- [Aptos snap](https://chrome.google.com/webstore/detail/metamask-flask-developmen/ljfoeinjpaedjfecbmggjgodbgkmjkjk)
+- [Bitkeep wallet](https://bitkeep.com/)
+- [TokenPocket wallet](https://tokenpocket.pro)
+- [Blocto wallet](https://portto.com/download)
+- [Nightly Wallet](https://nightly.app/download)
+- [OpenBlock Wallet](https://openblock.com)
+- [Spacecy wallet](https://spacecywallet.com/)
 
 # Installation
 
@@ -28,133 +36,10 @@ with `npm`
 ```
 npm install @pontem/aptos-wallet-adapter
 ```
-
-# Example for React
-
-## **Frontend Integration**
-
-Here's an example of how we integrate the adapter into [hippo's frontend](https://github.com/hippospace/hippo-frontend/blob/main/src/Providers.tsx):
-
-# Use React Provider
-
-```typescript
-import React from 'react';
-import {
-  WalletProvider,
-  PontemWalletAdapter,
-  HippoWalletAdapter,
-  AptosWalletAdapter,
-  HippoExtensionWalletAdapter,
-  MartianWalletAdapter,
-  FewchaWalletAdapter,
-  SpikaWalletAdapter,
-  RiseWalletAdapter,
-  FletchWalletAdapter
-} from '@pontem/aptos-wallet-adapter';
-
-const wallets = [
-  new PontemWalletAdapter(),
-  new HippoWalletAdapter(),
-  new MartianWalletAdapter(),
-  new AptosWalletAdapter(),
-  new FewchaWalletAdapter(),
-  new HippoExtensionWalletAdapter(),
-  new SpikaWalletAdapter(),
-  new RiseWalletAdapter(),
-  new FletchWalletAdapter()
-];
-
-const App: React.FC = () => {
-  return (
-    <WalletProvider
-      wallets={wallets}
-      autoConnect={true | false} /** allow auto wallet connection or not **/
-      onError={(error: Error) => {
-        console.log('Handle Error Message', error);
-      }}>
-      {/* your website */}
-    </WalletProvider>
-  );
-};
-
-export default App;
-```
-
-# Web3 Hook
-
-```typescript
-import { useWallet } from '@pontem/aptos-wallet-adapter';
-
-const { connected, account, network, ...rest } = useWallet();
-
-/*
-  ** Properties available: **
-
-  wallets: Wallet[]; - Array of wallets
-  wallet: Wallet | null; - Selected wallet
-  account: AccountKeys | null; { address, publicKey, authkey } - Wallet info: address, 
-  network: NetworkInfo - { name, chainId?, api? }
-  connected: boolean; - check the website is connected yet
-  connect(walletName: string): Promise<void>; - trigger connect popup
-  disconnect(): Promise<void>; - trigger disconnect action
-  signAndSubmitTransaction(
-    transaction: TransactionPayload
-    options?: any
-  ): Promise<PendingTransaction>; - function to sign and submit the transaction to chain
-  signTransaction(
-    transactionPayload,
-    options?: any
-  ): Promise<Uint8Array> - signs transaction and returns Uint8Array
-  signMessage(
-    signMessagePayload,
-    options?: any
-  ): Promise<signMessageResponse> - signs message and returns signMessageResponse
-*/
-```
-
-# Connect & Disconnect
-
-```typescript
-import { AptosWalletName, useWallet } from "@pontem/aptos-wallet-adapter";
-
-...
-
-const { connect, disconnect, connected, select } = useWallet();
-
-/** If auto-connect is not enabled, you will require to do the connect() manually **/
-useEffect(() => {
-  if (!autoConnect && currentWallet?.adapter) {
-    connect();
-  }
-}, [autoConnect, currentWallet, connect]);
-/** this is only required if you do not want auto connect wallet **/
-
-if (!connected) {
-  return (
-    <button
-      onClick={() => {
-        select(); // E.g. connecting to the Aptos official wallet (Breaking Change)
-      }}
-    >
-      Connect
-    </button>
-  );
-} else {
-  return (
-    <button
-      onClick={() => {
-        disconnect();
-      }}
-    >
-      Disconnect
-    </button>
-  );
-}
-```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 # Example for Vue
-
-# Installation
+## Dependencies
 
 Vue app required 2 packages as dependency:
 Because Vue and Pinia is optional dependency inside @pontem/aptos-wallet-adapter
@@ -169,7 +54,8 @@ Because Vue and Pinia is optional dependency inside @pontem/aptos-wallet-adapter
 }
 ```
 
-# Use Vue Wallet Provider
+<details>
+  <summary>Use Vue Wallet Provider</summary>
 
 ```typescript
 import { createApp } from "vue";
@@ -191,7 +77,10 @@ const _store = useWalletProviderStore(pinia);
 app.mount("#app");
 ```
 
-# Init store inside Vue Component
+</details>
+
+<details>
+  <summary>Init store inside Vue Component</summary>
 
 You can use both [composition](https://vuejs.org/guide/extras/composition-api-faq.html) and [options](https://vuejs.org/guide/typescript/options-api.html) API
 
@@ -275,8 +164,144 @@ export default defineComponent({
     });
 </script>
 ```
+</details>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-# Hippo Wallet Client
+
+# Example for React
+
+Here's an example of how we integrate the adapter into [hippo's frontend](https://github.com/hippospace/hippo-frontend/blob/main/src/Providers.tsx):
+
+
+<details>
+  <summary>Use React Provider</summary>
+
+```typescript
+import React from 'react';
+import {
+  WalletProvider,
+  PontemWalletAdapter,
+  HippoWalletAdapter,
+  AptosWalletAdapter,
+  HippoExtensionWalletAdapter,
+  MartianWalletAdapter,
+  FewchaWalletAdapter,
+  SpikaWalletAdapter,
+  RiseWalletAdapter,
+  FletchWalletAdapter
+} from '@pontem/aptos-wallet-adapter';
+
+const wallets = [
+  new PontemWalletAdapter(),
+  new HippoWalletAdapter(),
+  new MartianWalletAdapter(),
+  new AptosWalletAdapter(),
+  new FewchaWalletAdapter(),
+  new HippoExtensionWalletAdapter(),
+  new SpikaWalletAdapter(),
+  new RiseWalletAdapter(),
+  new FletchWalletAdapter()
+];
+
+const App: React.FC = () => {
+  return (
+    <WalletProvider
+      wallets={wallets}
+      autoConnect={true | false} /** allow auto wallet connection or not **/
+      onError={(error: Error) => {
+        console.log('Handle Error Message', error);
+      }}>
+      {/* your website */}
+    </WalletProvider>
+  );
+};
+
+export default App;
+```
+
+</details>
+
+<details>
+  <summary>Web3 Hook</summary>
+
+```typescript
+import { useWallet } from '@pontem/aptos-wallet-adapter';
+
+const { connected, account, network, ...rest } = useWallet();
+
+/*
+  ** Properties available: **
+
+  wallets: Wallet[]; - Array of wallets
+  wallet: Wallet | null; - Selected wallet
+  account: AccountKeys | null; { address, publicKey, authkey } - Wallet info: address, 
+  network: NetworkInfo - { name, chainId?, api? }
+  connected: boolean; - check the website is connected yet
+  connect(walletName: string): Promise<void>; - trigger connect popup
+  disconnect(): Promise<void>; - trigger disconnect action
+  signAndSubmitTransaction(
+    transaction: TransactionPayload
+    options?: any
+  ): Promise<PendingTransaction>; - function to sign and submit the transaction to chain
+  signTransaction(
+    transactionPayload,
+    options?: any
+  ): Promise<Uint8Array> - signs transaction and returns Uint8Array
+  signMessage(
+    signMessagePayload,
+    options?: any
+  ): Promise<signMessageResponse> - signs message and returns signMessageResponse
+*/
+```
+</details>
+
+<details>
+  <summary>Connect & Disconnect</summary>
+
+```typescript
+import { AptosWalletName, useWallet } from "@pontem/aptos-wallet-adapter";
+
+...
+
+const { connect, disconnect, connected, select } = useWallet();
+
+/** If auto-connect is not enabled, you will require to do the connect() manually **/
+useEffect(() => {
+  if (!autoConnect && currentWallet?.adapter) {
+    connect();
+  }
+}, [autoConnect, currentWallet, connect]);
+/** this is only required if you do not want auto connect wallet **/
+
+if (!connected) {
+  return (
+    <button
+      onClick={() => {
+        select(); // E.g. connecting to the Aptos official wallet (Breaking Change)
+      }}
+    >
+      Connect
+    </button>
+  );
+} else {
+  return (
+    <button
+      onClick={() => {
+        disconnect();
+      }}
+    >
+      Disconnect
+    </button>
+  );
+}
+```
+</details>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+# Hippo SDK
+
+<details>
+  <summary>Hippo Wallet Client</summary>
 
 ```typescript
 import { HippoSwapClient, HippoWalletClient } from '@manahippo/hippo-sdk';
@@ -296,8 +321,10 @@ export const hippoWalletClient = async (account: ActiveAptosWallet) => {
   return walletClient;
 };
 ```
+</details>
 
-# Hippo Swap Client
+<details>
+  <summary>Hippo Swap Client</summary>
 
 ```typescript
 import { HippoSwapClient, HippoWalletClient } from '@manahippo/hippo-sdk';
@@ -311,10 +338,13 @@ export const hippoSwapClient = async () => {
   return swapClient;
 };
 ```
+</details>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 # Submit and sign transaction
 
-**Request faucet**
+<details>
+  <summary>Request faucet</summary>
 
 ```typescript
 const { signAndSubmitTransaction } = useWallet();
@@ -328,8 +358,10 @@ if (payload) {
   }
 }
 ```
+</details>
 
-**Swap Token**
+<details>
+  <summary>Swap Token</summary>
 
 ```typescript
 const bestQuote = await hippoSwap.getBestQuoteBySymbols(fromSymbol, toSymbol, uiAmtIn, 3);
@@ -343,8 +375,10 @@ if (result) {
   setRefresh(true);
 }
 ```
+</details>
 
-**Deposit Transaction**
+<details>
+  <summary>Deposit Transaction</summary>
 
 ```typescript
 const pool = hippoSwap.getDirectPoolsBySymbolsAndPoolType(lhsSymbol, rhsSymbol, poolType);
@@ -358,3 +392,6 @@ if (result) {
   setRefresh(true);
 }
 ```
+</details>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
