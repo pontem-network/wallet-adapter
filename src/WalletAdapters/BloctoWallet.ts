@@ -65,10 +65,10 @@ export class BloctoWalletAdapter extends BaseWalletAdapter {
   protected _wallet: any | null;
 
   constructor({
-    network = WalletAdapterNetwork.Mainnet,
-    timeout = 10000,
-    bloctoAppId
-  }: BloctoWalletAdapterConfig) {
+                network = WalletAdapterNetwork.Mainnet,
+                timeout = 10000,
+                bloctoAppId
+              }: BloctoWalletAdapterConfig) {
     super();
 
     const sdk = new BloctoSDK({
@@ -203,7 +203,6 @@ export class BloctoWalletAdapter extends BaseWalletAdapter {
     try {
       try {
         const provider = this._provider;
-        // @ts-ignore
         const response = await provider?.signAndSubmitTransaction(transaction, options);
         if (response) {
           return { hash: response.hash };
