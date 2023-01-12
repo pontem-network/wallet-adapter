@@ -1,5 +1,10 @@
 <a name="readme-top"></a>
-# @pontem/aptos-wallet-adapter ![npm](https://img.shields.io/npm/v/@pontem/aptos-wallet-adapter)
+# @pontem/aptos-wallet-adapter
+<!-- PROJECT SHIELDS -->
+![npm](https://img.shields.io/npm/v/@pontem/aptos-wallet-adapter?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/pontem-network/wallet-adapter?style=for-the-badge)
+![GitHub Repo stars](https://img.shields.io/github/stars/pontem-network/wallet-adapter?style=for-the-badge)
+![GitHub contributors](https://img.shields.io/github/contributors/pontem-network/wallet-adapter?style=for-the-badge)
 
 React and Vue `WalletProvider` supporting loads of aptos wallets.
 Forked and featured with wallet provider based on Vue.js/Pinia.js from [Hippo Wallet Adapter](https://github.com/hippospace/aptos-wallet-adapter).

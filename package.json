@@ -1,6 +1,6 @@
 {
   "name": "@pontem/aptos-wallet-adapter",
-  "version": "0.6.9",
+  "version": "0.7.0",
   "description": "Wallet adapter with supporting Vue and React",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
