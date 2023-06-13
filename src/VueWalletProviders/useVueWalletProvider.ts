@@ -17,6 +17,7 @@ import {
   WalletNotReadyError,
   WalletNotSelectedError
 } from '../WalletProviders';
+import { isRedirectable } from '../utilities/helpers';
 
 interface IUseVueWalletProvider {
   wallets: WalletAdapter[];
@@ -178,6 +179,19 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
     } else {
       setDefaultState();
       return;
+    }
+
+    // check if we are in a redirectable view (i.e on mobile AND not in an in-app browser) and
+    // since wallet readyState can be NotDetected, we check it before the next check
+    if (isRedirectable()) {
+      // use wallet deep link
+      if (selectedWallet.adapter.deeplinkProvider) {
+        const url = encodeURIComponent(window.location.href);
+        const location = selectedWallet.adapter.deeplinkProvider({ url });
+        window.location.href = location;
+      } else {
+        return;
+      }
     }
 
     if (

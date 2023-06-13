@@ -73,6 +73,7 @@ export interface WalletAdapterProps<Name extends string = string> {
   connected: boolean;
   publicAccount: AccountKeys;
   network: NetworkInfo;
+  deeplinkProvider?: (data: { url: string }) => string;
   onAccountChange(): Promise<void>;
   onNetworkChange(): Promise<void>;
   connect(): Promise<void>;
