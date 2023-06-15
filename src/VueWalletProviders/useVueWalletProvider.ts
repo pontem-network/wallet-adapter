@@ -189,9 +189,9 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
         const url = encodeURIComponent(window.location.href);
         const location = selectedWallet.adapter.deeplinkProvider({ url });
         window.location.href = location;
-      } else {
-        return;
       }
+
+      return
     }
 
     if (
