@@ -189,9 +189,6 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
     ) {
       // Clear the selected wallet
       setWalletName(null);
-      if (typeof window !== 'undefined' && selectedWallet.adapter.url) {
-        window.open(selectedWallet.adapter.url, '_blank');
-      }
 
       throw handleError(new WalletNotReadyError());
     }
