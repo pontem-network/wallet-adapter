@@ -170,17 +170,6 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
 
     if (!selectedWallet?.adapter) throw handleError(new WalletNotSelectedError());
 
-    if (selectedWallet) {
-      wallet.value = selectedWallet;
-      adapter.value = selectedWallet.adapter;
-      connected.value = selectedWallet.adapter.connected;
-      account.value = selectedWallet.adapter.publicAccount;
-      walletNetwork.value = selectedWallet.adapter.network;
-    } else {
-      setDefaultState();
-      return;
-    }
-
     // check if we are in a redirectable view (i.e on mobile AND not in an in-app browser) and
     // since wallet readyState can be NotDetected, we check it before the next check
     if (isRedirectable()) {
@@ -189,8 +178,6 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
         const url = encodeURIComponent(window.location.href);
         const location = selectedWallet.adapter.deeplinkProvider({ url });
         window.location.href = location;
-      } else {
-        return;
       }
     }
 
@@ -212,6 +199,11 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
     connecting.value = true;
     try {
       await selectedWallet.adapter.connect();
+      wallet.value = selectedWallet;
+      adapter.value = selectedWallet.adapter;
+      connected.value = selectedWallet.adapter.connected;
+      account.value = selectedWallet.adapter.publicAccount;
+      walletNetwork.value = selectedWallet.adapter.network;
       handleAfterConnect();
     } catch (error: any) {
       // Clear the selected wallet
@@ -259,11 +251,10 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
   });
 
   // If autoConnect is enabled, try to connect when the adapter changes and is ready
-  watch([walletName, adapter, connecting, connected, readyState, autoConnect], () => {
+  watch([connecting, connected, readyState, autoConnect], () => {
     if (
       connecting.value ||
       connected.value ||
-      !walletName.value ||
       !autoConnect.value ||
       readyState.value === WalletReadyState.Unsupported
     ) {
