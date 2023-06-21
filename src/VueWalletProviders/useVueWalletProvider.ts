@@ -190,7 +190,7 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
         const location = selectedWallet.adapter.deeplinkProvider({ url });
         window.location.href = location;
       } else {
-        return;
+        return
       }
     }
 
@@ -202,9 +202,6 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
     ) {
       // Clear the selected wallet
       setWalletName(null);
-      if (typeof window !== 'undefined' && selectedWallet.adapter.url) {
-        window.open(selectedWallet.adapter.url, '_blank');
-      }
 
       throw handleError(new WalletNotReadyError());
     }

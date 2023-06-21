@@ -56,6 +56,7 @@ interface IPontemWallet {
     result: SignMessageResponse;
   }>;
   disconnect(): Promise<void>;
+  deeplinkProvider(data: { url: string }): string;
   network(): Promise<NetworkInfo>;
   onAccountChange(listener: (address: string | undefined) => void): Promise<void>;
   onNetworkChange(listener: (network: NetworkInfo) => void): Promise<void>;
@@ -150,6 +151,10 @@ export class PontemWalletAdapter extends BaseWalletAdapter {
 
   get readyState(): WalletReadyState {
     return this._readyState;
+  }
+
+  deeplinkProvider(data: { url: string }): string {
+    return `pontem-wallet://link?url=${data.url}`;
   }
 
   async connect(): Promise<void> {
