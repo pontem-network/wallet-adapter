@@ -17,7 +17,7 @@ import {
   WalletNotReadyError,
   WalletNotSelectedError
 } from '../WalletProviders';
-import { isRedirectable } from '../utilities/helpers';
+import { isMobile, isRedirectable } from '../utilities/helpers';
 
 interface IUseVueWalletProvider {
   wallets: WalletAdapter[];
@@ -189,6 +189,10 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
     ) {
       // Clear the selected wallet
       setWalletName(null);
+
+      if (typeof window !== 'undefined' && selectedWallet.adapter.url && !isMobile()) {
+        window.open(selectedWallet.adapter.url, '_blank');
+      }
 
       throw handleError(new WalletNotReadyError());
     }
