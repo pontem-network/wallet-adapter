@@ -18,6 +18,7 @@ import {
   WalletNotSelectedError
 } from '../WalletProviders';
 import { isMobile, isRedirectable } from '../utilities/helpers';
+import {AdapterPlugin, PluginProvider} from "@aptos-labs/wallet-adapter-core";
 
 interface IUseVueWalletProvider {
   wallets: WalletAdapter[];
@@ -203,7 +204,11 @@ export const useWalletProviderStore = defineStore('walletProviderStore', () => {
       wallet.value = selectedWallet;
       adapter.value = selectedWallet.adapter;
       connected.value = selectedWallet.adapter.connected;
-      account.value = selectedWallet.adapter.publicAccount;
+      if (selectedWallet.adapter.name === 'Msafe') {
+        account.value = await (selectedWallet.adapter as unknown as PluginProvider).account();
+      } else {
+        account.value = selectedWallet.adapter.publicAccount;
+      }
       walletNetwork.value = selectedWallet.adapter.network;
       handleAfterConnect();
     } catch (error: any) {
