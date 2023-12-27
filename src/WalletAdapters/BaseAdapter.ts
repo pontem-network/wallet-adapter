@@ -16,7 +16,7 @@ export type AuthKey = MaybeHexString;
 export interface AccountKeys {
   publicKey: PublicKey | PublicKey[] | null;
   address: Address | null;
-  authKey?: AuthKey | null;
+  authKey: AuthKey | null;
   minKeysRequired?: number;
 }
 
