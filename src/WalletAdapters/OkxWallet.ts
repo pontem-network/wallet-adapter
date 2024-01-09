@@ -168,8 +168,6 @@ export class OkxWalletAdapter extends BaseWalletAdapter {
         throw new WalletNotConnectedError(`${OKXWalletName} Connect Error`);
       }
 
-      console.log('!!connect response', response);
-
       const walletAccount = response.address;
       const publicKey = response.publicKey;
       if (walletAccount) {
@@ -180,7 +178,7 @@ export class OkxWalletAdapter extends BaseWalletAdapter {
         };
 
         try {
-          const networkInfo = await provider?.aptos?.getNetwork();
+          const networkInfo = await this.getNetwork();
           this._network = networkInfo.name;
           this._chainId = networkInfo.chainId;
           this._api = networkInfo.api;
@@ -204,8 +202,6 @@ export class OkxWalletAdapter extends BaseWalletAdapter {
     try {
       const response = await this._provider?.aptos?.network();
       if (!response) throw `${OKXWalletName} Network Error`;
-
-      console.log('!!getNetwork response', response);
 
       return {
         name: response.toLowerCase() as WalletAdapterNetwork.Mainnet,
@@ -241,8 +237,6 @@ export class OkxWalletAdapter extends BaseWalletAdapter {
       const provider = this._provider || window.okxwallet;
       if (!wallet || !provider) throw new WalletNotConnectedError();
 
-      console.log('!!signAndSubmitTransaction transaction', transaction);
-
       const response = await provider?.aptos?.signAndSubmitTransaction(
         transaction,
         options
@@ -270,8 +264,6 @@ export class OkxWalletAdapter extends BaseWalletAdapter {
       const provider = this._provider || window.okxwallet;
       if (!wallet || !provider) throw new WalletNotConnectedError();
 
-      console.log('!!signTransaction transaction', transaction);
-
       const response = await provider?.aptos?.signTransaction(
         transaction,
         options
@@ -290,8 +282,6 @@ export class OkxWalletAdapter extends BaseWalletAdapter {
       const wallet = this._wallet;
       const provider = this._provider || window.okxwallet;
       if (!wallet || !provider) throw new WalletNotConnectedError();
-
-      console.log('!!signMessage message', message);
 
       if (typeof message !== "object" || !message.nonce) {
         `${OKXWalletName} Invalid signMessage Payload`;
@@ -317,23 +307,11 @@ export class OkxWalletAdapter extends BaseWalletAdapter {
       const handleNetworkChange = (newNetwork: {
         networkName: NetworkInfo;
       }) => {
-        console.log('!!handleNetworkChange newNetwork', newNetwork);
-
         this._network = newNetwork.networkName?.name;
         this._api = newNetwork.networkName?.api;
         this._chainId = newNetwork.networkName?.chainId;
         this.emit('networkChange', this._network);
       };
-
-      // const handleNetworkChange = async (newNetwork: {
-      //   networkName: NetworkInfo;
-      // }): Promise<void> => {
-      //   callback({
-      //     name: newNetwork,
-      //     chainId: undefined,
-      //     api: undefined,
-      //   });
-      // };
       await provider?.aptos?.onNetworkChange(handleNetworkChange);
     } catch (error: any) {
       const errMsg = error.message;
@@ -350,14 +328,17 @@ export class OkxWalletAdapter extends BaseWalletAdapter {
       const handleAccountChange = async (
         newAccount: AccountInfo
       ): Promise<void> => {
+        if (newAccount === null) {
+          await this.disconnect();
+          return;
+        }
 
-        console.log('!!onAccountChange newAccount', newAccount);
         if (newAccount?.publicKey) {
           this._wallet.publicKey = newAccount.publicKey;
           this._wallet.address = newAccount.address;
           this._wallet.minKeysRequired = newAccount.minKeysRequired;
           this.emit('accountChange', newAccount.address);
-        } else {
+        } else if (wallet.isConnected) {
           await this.connect();
         }
       };
