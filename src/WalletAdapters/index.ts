@@ -24,3 +24,4 @@ export * from './CloverWallet';
 export * from './SpacecyWallet';
 export * from './TrustWallet';
 export * from './OkxWallet';
+export * from './BigGetWallet'
