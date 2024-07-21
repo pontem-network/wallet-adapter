@@ -21,7 +21,7 @@ Supports:
 - [Fletch wallet](http://fletchwallet.io/)
 - [Spika web wallet](https://spika.app)
 - [Aptos snap](https://chrome.google.com/webstore/detail/metamask-flask-developmen/ljfoeinjpaedjfecbmggjgodbgkmjkjk)
-- [Bitkeep wallet](https://bitkeep.com/)
+- [Bitget wallet](https://bitget.com/)
 - [TokenPocket wallet](https://tokenpocket.pro)
 - [Blocto wallet](https://portto.com/download)
 - [Nightly Wallet](https://nightly.app/download)
