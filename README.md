@@ -27,6 +27,10 @@ Supports:
 - [Nightly Wallet](https://nightly.app/download)
 - [OpenBlock Wallet](https://openblock.com)
 - [Spacecy wallet](https://spacecywallet.com/)
+- [Trust wallet](https://trustwallet.com/)
+- [Safepal wallet](https://www.safepal.com/)
+- [Fox wallet](https://foxwallet.com/)
+- [Coin98 wallet](https://coin98.com/)
 
 # Installation
 
