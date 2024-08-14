@@ -11,22 +11,22 @@ Forked and featured with wallet provider based on Vue.js/Pinia.js from [Hippo Wa
 
 Supports:
 
-- [Petra wallet](https://petra.app/)
-- [Martian wallet](https://martianwallet.xyz/)
-- [Fewcha wallet](https://fewcha.app/)
-- [Pontem Wallet](https://pontem.network/pontem-wallet)
-- [Spika wallet](https://spika.app)
-- [Rise wallet](https://risewallet.io/)
-- [HyperPay wallet](https://www.hyperpay.io/)
-- [Fletch wallet](http://fletchwallet.io/)
-- [Spika web wallet](https://spika.app)
 - [Aptos snap](https://chrome.google.com/webstore/detail/metamask-flask-developmen/ljfoeinjpaedjfecbmggjgodbgkmjkjk)
 - [Bitkeep wallet](https://bitkeep.com/)
-- [TokenPocket wallet](https://tokenpocket.pro)
 - [Blocto wallet](https://portto.com/download)
-- [Nightly Wallet](https://nightly.app/download)
-- [OpenBlock Wallet](https://openblock.com)
+- [Fewcha wallet](https://fewcha.app/)
+- [Fletch wallet](http://fletchwallet.io/)
+- [HyperPay wallet](https://www.hyperpay.io/)
+- [Martian wallet](https://martianwallet.xyz/)
+- [Nightly wallet](https://nightly.app/download)
+- [OpenBlock wallet](https://openblock.com)
+- [Petra wallet](https://petra.app/)
+- [Pontem wallet](https://pontem.network/pontem-wallet)
+- [Rise wallet](https://risewallet.io/)
 - [Spacecy wallet](https://spacecywallet.com/)
+- [Spika wallet](https://spika.app)
+- [Spika web wallet](https://spika.app)
+- [TokenPocket wallet](https://tokenpocket.pro)
 
 # Installation
 
