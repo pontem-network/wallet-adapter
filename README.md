@@ -27,6 +27,17 @@ Supports:
 - [Nightly Wallet](https://nightly.app/download)
 - [OpenBlock Wallet](https://openblock.com)
 - [Spacecy wallet](https://spacecywallet.com/)
+- [Clover wallet](https://chrome.google.com/webstore/detail/clv-wallet/nhnkbkgjikgcigadomkphalanndcapjk)
+- [Coin98 wallet](https://coin98.com/wallet)
+- [Fox wallet](https://foxwallet.com)
+- [Hippo wallet](https://hippowallet.io/)
+- [Msafe wallet](https://www.m-safe.io/)
+- [Fox wallet](https://foxwallet.com/download)
+- [ONTO wallet](https://www.onto.app/download/)
+- [Okx wallet](https://www.okx.com/download)
+- [SafePal wallet](https://www.safepal.com/download)
+- [Trust wallet](https://trustwallet.com/download)
+
 
 # Installation
 
